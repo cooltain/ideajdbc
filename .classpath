@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="src" path="test"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.6"/>
+	<classpathentry kind="lib" path="lib/depends/commons-collections-3.2.1.jar"/>
+	<classpathentry kind="lib" path="lib/depends/commons-lang3-3.1.jar"/>
+	<classpathentry kind="lib" path="lib/depends/commons-logging-1.1.1.jar"/>
+	<classpathentry kind="lib" path="lib/depends/org.springframework.core-3.1.1.RELEASE.jar"/>
+	<classpathentry kind="lib" path="lib/depends/slf4j-api-1.6.4.jar"/>
+	<classpathentry kind="lib" path="lib/opts/logback-access-1.0.10.jar"/>
+	<classpathentry kind="lib" path="lib/opts/logback-classic-1.0.3.jar"/>
+	<classpathentry kind="lib" path="lib/opts/logback-core-1.0.3.jar"/>
+	<classpathentry kind="lib" path="lib/test/junit-4.6.jar"/>
+	<classpathentry kind="lib" path="lib/test/mysql-connector-java-5.1.25-bin.jar"/>
+	<classpathentry kind="lib" path="lib/j2ee/servlet-api.jar"/>
+	<classpathentry kind="lib" path="lib/opts/proxool-0.9.1.jar"/>
+	<classpathentry kind="lib" path="lib/opts/proxool-cglib.jar"/>
+	<classpathentry kind="lib" path="lib/opts/org.springframework.core-3.1.1.RELEASE.jar"/>
+	<classpathentry kind="lib" path="lib/opts/org.springframework.beans-3.1.1.RELEASE.jar"/>
+	<classpathentry kind="lib" path="lib/opts/org.springframework.jdbc-3.1.1.RELEASE.jar"/>
+	<classpathentry kind="lib" path="lib/opts/org.springframework.transaction-3.1.1.RELEASE.jar"/>
+	<classpathentry kind="lib" path="lib/test/org.springframework.context-3.1.1.RELEASE.jar"/>
+	<classpathentry kind="lib" path="lib/depends/commons-beanutils-1.9.2.jar"/>
+	<classpathentry kind="lib" path="lib/test/org.springframework.asm-3.1.1.RELEASE.jar"/>
+	<classpathentry kind="lib" path="lib/test/org.springframework.aop-3.1.1.RELEASE.jar"/>
+	<classpathentry kind="lib" path="lib/test/aopalliance.jar"/>
+	<classpathentry kind="lib" path="lib/test/cglib-2.2.jar"/>
+	<classpathentry kind="lib" path="lib/test/org.springframework.expression-3.1.1.RELEASE.jar"/>
+	<classpathentry kind="lib" path="lib/test/asm-3.3.jar"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>
