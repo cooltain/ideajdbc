@@ -75,6 +75,13 @@ public interface Query<T> extends Action<T> {
 	/**
 	 * 根据当前查询返回单条结果。
 	 * 
+	 * @return 查询结果（单条）
+	 */
+	public T unique();
+	
+	/**
+	 * 根据当前查询返回单条结果。
+	 * 
 	 * @param entityClass 实体类
 	 * @return 查询结果（单条）
 	 */

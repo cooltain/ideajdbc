@@ -406,4 +406,29 @@ public class SqlQueryAction<T> extends AbstractAction<T> implements Query<T> {
 		ResultHandler handler = new ResultHandler();
 		return handler.handleResultToEntity(rs, entityClass, this, false);
 	}
+
+	@Override
+	public T unique() {
+		checkTransaction(transaction);
+		
+		//使用ActionParser解析
+		ActionParser parser = new SqlQueryParser();
+		JdbcSql sql = parser.parse(this);
+		
+		//执行Sql并返回结果
+		SqlExecutor executor = new SqlExecutor();
+		ResultSet rs = executor.executeQuery(sql, transaction);
+		
+		ResultHandler handler = new ResultHandler();
+		if(this.entityClass != null) {
+			List<T> result = handler.handleResultToEntity(rs, entityClass, this, true);
+			if(result != null && result.size() == 1) {
+				return result.get(0);
+			}else{
+				return null;
+			}
+		}else{
+			throw new IdeaJdbcException(IdeaJdbcExceptionCode.QUERY_ERR, "No special entityClass in unique method.");
+		}
+	}
 }

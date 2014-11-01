@@ -181,10 +181,21 @@ public class TestIdeaJdbc {
 	}
 	
 	@Test
-	public void testUnique() {
+	public void testUniqueTo() {
 		IdeaJdbc.beginTransaction();
 		
 		User user = (User)IdeaJdbc.query("select * from t_user where c_id = '1'").uniqueTo(User.class);
+		assertEquals("1", user.getId());
+		assertEquals("Chinakite", user.getName());
+		
+		IdeaJdbc.endTransaction();
+	}
+	
+	@Test
+	public void testUnique() {
+		IdeaJdbc.beginTransaction();
+		
+		User user = (User)IdeaJdbc.query(User.class, "oldMan").unique();
 		assertEquals("1", user.getId());
 		assertEquals("Chinakite", user.getName());
 		
