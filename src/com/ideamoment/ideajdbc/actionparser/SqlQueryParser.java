@@ -48,12 +48,14 @@ public class SqlQueryParser extends AbstractActionParser implements ActionParser
 			EntityDescription entityDescription = EntityDescriptionFactory.getInstance().getEntityDescription(entityClass);
 			if(queryName != null) {
 				sql = entityDescription.getSqlQuery(queryName);
+				if(sql == null){
+					throw new IdeaJdbcException(IdeaJdbcExceptionCode.NAMEDSQL_NOTFOUND, "Named Query [" + queryName + "] is not defined in entity [" + entityClass.getName() + "].");
+				}
 			}else{
 				sql = sqlQuery.getSql();
-			}
-			
-			if(sql == null){
-				throw new IdeaJdbcException(IdeaJdbcExceptionCode.NAMEDSQL_NOTFOUND, "Named Query [" + queryName + "] is not defined in entity [" + entityClass.getName() + "].");
+				if(sql == null) {
+					sql = "select " + entityDescription.allDataItemString() + " from " + entityDescription.getDataSet();
+				}
 			}
 		}
 		

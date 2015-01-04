@@ -68,6 +68,17 @@ public class SqlQueryAction<T> extends AbstractAction<T> implements Query<T> {
 		this.sql = sql;
 	}
 	
+	/**
+	 * 构造函数
+	 * 
+	 * @param entityClass 操作的实体类
+	 * @param transaction 事务
+	 */
+	public SqlQueryAction(Class<T> entityClass, Transaction transaction) {
+		this.transaction = transaction;
+		this.entityClass = entityClass;
+	}
+	
 	@Override
 	public Class<T> getEntityClass() {
 		return entityClass;
@@ -431,4 +442,10 @@ public class SqlQueryAction<T> extends AbstractAction<T> implements Query<T> {
 			throw new IdeaJdbcException(IdeaJdbcExceptionCode.QUERY_ERR, "No special entityClass in unique method.");
 		}
 	}
+
+//	@Override
+//	public Map map() {
+//		// TODO Auto-generated method stub
+//		return null;
+//	}
 }

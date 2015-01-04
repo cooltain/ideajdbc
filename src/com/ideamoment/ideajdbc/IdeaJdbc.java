@@ -64,6 +64,16 @@ public class IdeaJdbc {
 	 * 在默认数据库上构建一个预定义名称的sql查询
 	 * 
 	 * @param entityClass 实体类
+	 * @return 查询对象
+	 */
+	public static <T> Query<T> query(Class<T> entityClass) {
+		return defaultDb().query(entityClass);
+	}
+	
+	/**
+	 * 在默认数据库上构建一个预定义名称的sql查询
+	 * 
+	 * @param entityClass 实体类
 	 * @param sqlName SQL名称
 	 * @return 查询对象
 	 */

@@ -33,6 +33,14 @@ public interface Query<T> extends Action<T> {
 	public Page page(int currentPage, int pageSize);
 	
 	/**
+	 * 根据当前查询动作信息执行查询，如果查询动作中没有指定实体类，则将返回的结果映射为一个map的Map实例，实例中以id为key，数据对象为value。
+	 * 在内部map中如果是单表，以字段为key，如果是多表，则以表名.字段名为key。
+	 * 
+	 * @return Map实例
+	 */
+//	public Map map();
+	
+	/**
 	 * 将查询出来的结果转换为entityClass类返回
 	 * 
 	 * @param entityClass 实体类

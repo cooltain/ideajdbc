@@ -445,16 +445,22 @@ public class ResultHandler<T> {
 				break;
 			case DATE:
 				java.sql.Date sqlDate = rs.getDate(aliasName);
-				result = DateUtil.toJavaDate(sqlDate);
+				if(sqlDate != null){
+					result = DateUtil.toJavaDate(sqlDate);
+				}
 				break;
 			case TIME:
 				java.sql.Time sqlTime = rs.getTime(aliasName);
-				result = DateUtil.toJavaDate(sqlTime);
+				if(sqlTime != null){
+					result = DateUtil.toJavaDate(sqlTime);
+				}
 				break;
 			case DATETIME:
 			case TIMESTAMP:
 				java.sql.Timestamp timestamp = rs.getTimestamp(aliasName);
-				result = DateUtil.toJavaDate(timestamp);
+				if(timestamp != null){
+					result = DateUtil.toJavaDate(timestamp);
+				}
 				break;
 			case BLOB:
 			case BYTE:

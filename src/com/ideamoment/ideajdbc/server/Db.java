@@ -138,6 +138,18 @@ public class Db {
 	}
 	
 	/**
+	 * 构建一个sql查询
+	 * 
+	 * @param clazz 实体类
+	 * @return
+	 */
+	public Query query(Class clazz) {
+		Transaction transaction = getTransaction();
+		Query sqlQuery = new SqlQueryAction(clazz, transaction);
+		return sqlQuery;
+	}
+	
+	/**
 	 * 构建一个预定义名称的sql查询
 	 * 
 	 * @param entityClass 实体类
