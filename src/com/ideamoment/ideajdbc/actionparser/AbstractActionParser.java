@@ -53,7 +53,7 @@ public class AbstractActionParser {
 					}else if(ch == ':'){		//如果是冒号，开始识别参数名
 						paramNameBuffer.append(ch);
 						lastColon = i;
-					}else if(ch == ' ' || ch == ')'){		//如果遇到空格，则需判断参数名缓冲中是否有内容，有内容则标志着成功识别一个参数名称，
+					}else if(ch == ' ' || ch == ')' || ch == ','){		//如果遇到空格，则需判断参数名缓冲中是否有内容，有内容则标志着成功识别一个参数名称，
 						                        //需获取参数放入参数列表的正确位置，并将名称替换为问号
 						if(paramNameBuffer.length() > 0) {
 							String paramName = paramNameBuffer.deleteCharAt(0).toString();

@@ -66,7 +66,8 @@ public class SaveAction<T> extends AbstractAction<T> implements Action<T> {
 		  .append(entityDescription.getIdDescription().getDataItem());
 		
 		JdbcSqlParam idParam = new JdbcSqlParam();
-		if(StringUtils.isEmpty(entityDescription.getIdDescription().getGenerator())) {
+		if(StringUtils.isEmpty(entityDescription.getIdDescription().getGenerator())
+				|| entityDescription.getIdDescription().getGenerator().trim().toLowerCase().equals("assigned")) {
 			Object id;
 			try {
 				id = PropertyUtils.getProperty(entity, entityDescription.getIdDescription().getName());
