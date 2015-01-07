@@ -95,6 +95,11 @@ public class SqlExecutor {
 				DataItemType paramType = sp.getType();
 				Object paramValue = sp.getParamValue();
 				
+				if(paramType == null) {
+					pstmt.setObject(i, paramValue);
+					return;
+				}
+				
 				switch (paramType) {
 					case VARCHAR:
 					case VARCHAR2:
