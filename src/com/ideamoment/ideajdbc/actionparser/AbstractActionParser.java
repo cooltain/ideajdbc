@@ -5,12 +5,15 @@
  */
 package com.ideamoment.ideajdbc.actionparser;
 
+import java.lang.reflect.Array;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Stack;
+
+import org.apache.commons.lang3.StringUtils;
 
 import com.ideamoment.ideadata.annotation.DataItemType;
 import com.ideamoment.ideajdbc.action.Parameter;
@@ -54,7 +57,7 @@ public class AbstractActionParser {
 						paramNameBuffer.append(ch);
 						lastColon = i;
 					}else if(ch == ' ' || ch == ')' || ch == ','){		//如果遇到空格，则需判断参数名缓冲中是否有内容，有内容则标志着成功识别一个参数名称，
-						                        //需获取参数放入参数列表的正确位置，并将名称替换为问号
+						                        						//需获取参数放入参数列表的正确位置，并将名称替换为问号
 						if(paramNameBuffer.length() > 0) {
 							String paramName = paramNameBuffer.deleteCharAt(0).toString();
 							//获取参数放入参数列表的正确位置
@@ -97,11 +100,55 @@ public class AbstractActionParser {
 		List<JdbcSqlParam> sqlParams = new ArrayList<JdbcSqlParam>(params.length);
 		int i = 0;
 		for(Parameter p : params) {
-			JdbcSqlParam jdbcSqlParam = new JdbcSqlParam();
-			jdbcSqlParam.setType(getParamType(p));
-			jdbcSqlParam.setParamValue(p.getValue());
-			sqlParams.add(jdbcSqlParam);
-			i++;
+			if(p.getValue() instanceof List) {		//处理List参数
+				List tempParams = (List)p.getValue();
+				StringBuffer conbuffer = new StringBuffer();
+				for(int m=0; m<tempParams.size(); m++) {
+					if(m > 0) {
+						conbuffer.append(", ");
+					}
+					conbuffer.append("?");
+					
+					Object tempParam = tempParams.get(m);
+					
+					JdbcSqlParam jdbcSqlParam = new JdbcSqlParam();
+					jdbcSqlParam.setType(determineDataItemType(tempParam.getClass()));
+					jdbcSqlParam.setParamValue(tempParam);
+					sqlParams.add(jdbcSqlParam);
+				}
+				int quesPos = StringUtils.ordinalIndexOf(sql, "?", (i+1));
+				String preSql = sql.substring(0, quesPos);
+				String postSql = sql.substring(quesPos + 1);
+				sql = preSql + conbuffer.toString() + postSql;
+				i = i + tempParams.size();
+			}else if(p.getValue().getClass().isArray()){	//处理数组参数
+				Object[] tempParams = (Object[])p.getValue();
+				StringBuffer conbuffer = new StringBuffer();
+				for(int m=0; m<tempParams.length; m++) {
+					if(m > 0) {
+						conbuffer.append(", ");
+					}
+					conbuffer.append("?");
+					
+					Object tempParam = tempParams[m];
+					
+					JdbcSqlParam jdbcSqlParam = new JdbcSqlParam();
+					jdbcSqlParam.setType(determineDataItemType(tempParam.getClass()));
+					jdbcSqlParam.setParamValue(tempParam);
+					sqlParams.add(jdbcSqlParam);
+				}
+				int quesPos = StringUtils.ordinalIndexOf(sql, "?", (i+1));
+				String preSql = sql.substring(0, quesPos);
+				String postSql = sql.substring(quesPos + 1);
+				sql = preSql + conbuffer.toString() + postSql;
+				i = i + tempParams.length;
+			}else{
+				JdbcSqlParam jdbcSqlParam = new JdbcSqlParam();
+				jdbcSqlParam.setType(getParamType(p));
+				jdbcSqlParam.setParamValue(p.getValue());
+				sqlParams.add(jdbcSqlParam);
+				i++;
+			}
 		}
 		
 		return new JdbcSql(sql, sqlParams);
@@ -109,6 +156,17 @@ public class AbstractActionParser {
 	
 	private DataItemType getParamType(Parameter p) {
 		Object type = p.getType();
+		if(type == null) {
+			type = p.getValue().getClass();
+		}
+		return determineDataItemType(type);
+	}
+
+	/**
+	 * @param type
+	 * @return
+	 */
+	private DataItemType determineDataItemType(Object type) {
 		if(type instanceof DataItemType) {
 			return (DataItemType)type;
 		}else{

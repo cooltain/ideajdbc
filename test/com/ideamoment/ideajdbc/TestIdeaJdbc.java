@@ -7,9 +7,9 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 import java.sql.Connection;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -320,6 +320,40 @@ public class TestIdeaJdbc {
 		assertEquals(2, result.size());
 		assertEquals("1", ((User)(result.get(0))).getId());
 		assertEquals("Chinakite", ((User)(result.get(0))).getName());
+		
+		IdeaJdbc.endTransaction();
+	}
+	
+	@Test
+	public void testInListParameter() {
+		IdeaJdbc.beginTransaction();
+		
+		List<String> ids = new ArrayList<String>();
+		ids.add("1");
+		ids.add("2");
+		ids.add("3");
+		List list = IdeaJdbc.query("select * from t_order where c_id in (:ids)").setParameter("ids", ids).listTo(Order.class);
+		assertEquals(3, list.size());
+		
+		IdeaJdbc.endTransaction();
+	}
+	
+	
+	@Test
+	public void testInArrayParameter() {
+		IdeaJdbc.beginTransaction();
+		
+		List<String> ids = new ArrayList<String>();
+		ids.add("1");
+		ids.add("2");
+		ids.add("3");
+		
+		String[] userIds = new String[]{"1", "2"};
+		List list = IdeaJdbc.query("select * from t_order where c_id in (:ids) and c_userid in (:userIds)")
+							.setParameter("ids", ids)
+							.setParameter("userIds", userIds)
+							.listTo(Order.class);
+		assertEquals(3, list.size());
 		
 		IdeaJdbc.endTransaction();
 	}
