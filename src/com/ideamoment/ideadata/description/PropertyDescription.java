@@ -31,6 +31,16 @@ public class PropertyDescription {
 	 * 数据项长度
 	 */
 	private int length = -1;
+	
+	/**
+	 * 是否可空
+	 */
+	private boolean nullable = true;
+	
+	/**
+	 * 默认值
+	 */
+	private String defaultValue = null;
 
 	/**
 	 * @return the type
@@ -86,6 +96,34 @@ public class PropertyDescription {
 	 */
 	public void setName(String name) {
 		this.name = name;
+	}
+
+	/**
+	 * @return the nullable
+	 */
+	public boolean isNullable() {
+		return nullable;
+	}
+
+	/**
+	 * @param nullable the nullable to set
+	 */
+	public void setNullable(boolean nullable) {
+		this.nullable = nullable;
+	}
+
+	/**
+	 * @return the defaultValue
+	 */
+	public String getDefaultValue() {
+		return defaultValue;
+	}
+
+	/**
+	 * @param defaultValue the defaultValue to set
+	 */
+	public void setDefaultValue(String defaultValue) {
+		this.defaultValue = defaultValue;
 	}
 	
 }

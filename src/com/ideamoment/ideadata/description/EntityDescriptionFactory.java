@@ -148,6 +148,8 @@ public class EntityDescriptionFactory {
 					
 					propertyDescription.setName(field.getName());
 					propertyDescription.setType(determineDataItemType(field));
+					propertyDescription.setNullable(propInfo.nullable());
+					propertyDescription.setDefaultValue(propInfo.defaultValue());
 					
 					if(propertyDecorations != null && propertyDecorations.size() > 0) {
 						for(PropertyDescriptionDecoration decoration : propertyDecorations) {

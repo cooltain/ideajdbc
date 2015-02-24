@@ -40,4 +40,18 @@ public @interface Property {
 	 * @return
 	 */
 	public int length() default -1;
+	
+	/**
+	 * 是否可空
+	 * 
+	 * @return
+	 */
+	public boolean nullable() default true;
+	
+	/**
+	 * 默认值
+	 * 
+	 * @return
+	 */
+	public String defaultValue() default "";
 }

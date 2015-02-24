@@ -210,6 +210,22 @@ public class EntityDescription {
 	}
 	
 	/**
+	 * 是否有主键
+	 * @return
+	 */
+	public boolean hasId() {
+		return this.idDescription != null;
+	}
+	
+	/**
+	 * 是否有属性
+	 * @return
+	 */
+	public boolean hasProperty() {
+		return (this.properties != null && this.properties.size() > 0);
+	}
+	
+	/**
 	 * 当前实体的所有字段，以逗号分隔，用于select场景
 	 * 
 	 * @return

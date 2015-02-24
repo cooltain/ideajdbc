@@ -12,6 +12,7 @@ import java.util.List;
 import com.ideamoment.ideadata.annotation.DataItemType;
 import com.ideamoment.ideadata.annotation.Entity;
 import com.ideamoment.ideadata.annotation.Id;
+import com.ideamoment.ideadata.annotation.Property;
 import com.ideamoment.ideadata.annotation.Ref;
 import com.ideamoment.ideadata.annotation.Transient;
 import com.ideamoment.ideajdbc.annotation.Sql;
@@ -45,6 +46,7 @@ public class User implements Serializable{
 	@Id(dataItem="C_ID", type=DataItemType.VARCHAR2)
 	private String id;
 	
+	@Property(dataItem="C_NAME", length=64, defaultValue="ZZH", nullable=false)
 	private String name;
 	
 	private String email;
