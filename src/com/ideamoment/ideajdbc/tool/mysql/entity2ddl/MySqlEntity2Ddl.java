@@ -272,7 +272,9 @@ public class MySqlEntity2Ddl {
 				sb.append(" DEFAULT ").append("'").append(defaultValue).append("'");
 			}
 		}else{
-			sb.append(" DEFAULT NULL");
+			if(propertyDesc.isNullable()) {
+				sb.append(" DEFAULT NULL");
+			}
 		}
 		
 		return sb.toString();
