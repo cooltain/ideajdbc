@@ -5,18 +5,25 @@
  */
 package com.ideamoment.ideajdbc.tool.mysql.entity2ddl;
 
+import java.io.File;
+import java.io.IOException;
+import java.net.URL;
+import java.net.URLDecoder;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.ideamoment.ideadata.annotation.DataItemType;
+import com.ideamoment.ideadata.annotation.Entity;
 import com.ideamoment.ideadata.description.EntityDescription;
 import com.ideamoment.ideadata.description.EntityDescriptionFactory;
 import com.ideamoment.ideadata.description.IdDescription;
@@ -39,6 +46,71 @@ public class MySqlEntity2Ddl {
 	private static String CHARSET = "utf8";
 	private static String COLLATE = "utf8_unicode_ci";
 	
+	public void scanAndSyncTables(String basePacageName,String dbName, String catalog, String schemaPattern, boolean dropWhenExist ){
+		Set<Class<?>> classes=getAllEntityClasses(basePacageName);
+		if(classes!=null&&classes.size()!=0){
+			for(Class<?> entityClass:classes){
+				syncTable(dbName,catalog, schemaPattern,entityClass,dropWhenExist);
+			}
+			
+		}
+	}
+	public Set<Class<?>> getAllEntityClasses(String basePacageName){
+		Set<Class<?>> classes=new HashSet<Class<?>>();
+		String packageName = basePacageName;
+        if (packageName.endsWith(".")) {
+            packageName = packageName
+                    .substring(0, packageName.lastIndexOf('.'));
+        }
+        String package2Path = packageName.replace('.', '/');
+        Enumeration<URL> dirs;
+        try {
+            dirs = Thread.currentThread().getContextClassLoader().getResources(
+                    package2Path);
+            while (dirs.hasMoreElements()) {
+                URL url = dirs.nextElement();
+                String protocol = url.getProtocol();
+                if ("file".equals(protocol)) {
+                    logger.info("开始扫描class文件....");
+                    String filePath = URLDecoder.decode(url.getFile(), "UTF-8");
+                    scanPackage(filePath,basePacageName,classes);
+                } 
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+ 
+        return classes;
+		
+	}
+	
+	public void scanPackage(String filePath,String packageName,Set<Class<?>> classes){ //递归得到所有的classes
+    	File dir=new File(filePath);
+    	if(!dir.exists()){
+    		return;
+    	}
+    	File[] files=dir.listFiles();
+    	for(File file:files){
+    		if(file.isDirectory()){
+    			scanPackage(file.getPath(),packageName+"."+file.getName(),classes);
+    		}else{
+    			try {
+    				int index=file.getName().lastIndexOf(".class");
+    				if(index!=-1){
+    					String className=file.getName().substring(0,index);
+        				Class<?> currentClass=Class.forName(packageName+"."+className);
+        				if(currentClass.isAnnotationPresent(Entity.class)){
+        					classes.add(currentClass);
+        				}
+    				}
+				} catch (ClassNotFoundException e) {
+					e.printStackTrace();
+				}
+    		}
+    	}
+    	
+    	
+    }
 	public void syncTable(String dbName, String catalog, String schemaPattern, Class entityClass, boolean dropWhenExist) {
 		EntityDescription entityDesc = EntityDescriptionFactory.getInstance().getEntityDescription(entityClass);
 		Connection conn = IdeaJdbc.db(dbName).beginTransaction().getConnection();
@@ -283,6 +355,7 @@ public class MySqlEntity2Ddl {
 	
 	public static void main(String[] args) {
 		MySqlEntity2Ddl m = new MySqlEntity2Ddl();
+		Set<Class<?>> set=m.getAllEntityClasses("com");
 		m.syncTable("mysql", "ideajdbc", null, TestGen.class, false);
 	}
 }
