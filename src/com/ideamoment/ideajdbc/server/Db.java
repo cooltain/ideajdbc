@@ -5,6 +5,9 @@
  */
 package com.ideamoment.ideajdbc.server;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.ideamoment.ideadata.description.EntityDescription;
 import com.ideamoment.ideadata.description.EntityDescriptionFactory;
 import com.ideamoment.ideajdbc.action.Command;
@@ -15,9 +18,19 @@ import com.ideamoment.ideajdbc.action.SqlCommand;
 import com.ideamoment.ideajdbc.action.SqlQueryAction;
 import com.ideamoment.ideajdbc.action.UpdateAction;
 import com.ideamoment.ideajdbc.configuration.DbConfig;
+import com.ideamoment.ideajdbc.exception.IdeaJdbcException;
+import com.ideamoment.ideajdbc.exception.IdeaJdbcExceptionCode;
+import com.ideamoment.ideajdbc.transaction.ScopeTransaction;
+import com.ideamoment.ideajdbc.transaction.ScopeTransactionManager;
+import com.ideamoment.ideajdbc.transaction.ScopeTransactionThreadLocal;
 import com.ideamoment.ideajdbc.transaction.Transaction;
-import com.ideamoment.ideajdbc.transaction.TransactionThreadLocal;
+import com.ideamoment.ideajdbc.transaction.TxCallable;
+import com.ideamoment.ideajdbc.transaction.TxIsolation;
 import com.ideamoment.ideajdbc.transaction.TxManager;
+import com.ideamoment.ideajdbc.transaction.TxRunnable;
+import com.ideamoment.ideajdbc.transaction.TxStrategy;
+import com.ideamoment.ideajdbc.transaction.TxStrategyThreadLocal;
+import com.ideamoment.ideajdbc.transaction.TxType;
 
 /**
  * 每个Db对应了一个数据源。这里将提供数据操作的所有接口。
@@ -27,6 +40,9 @@ import com.ideamoment.ideajdbc.transaction.TxManager;
  *
  */
 public class Db {
+	
+	private static final Logger logger = LoggerFactory.getLogger(Db.class);
+	
 	/**
 	 * 数据库名称
 	 * 
@@ -77,9 +93,16 @@ public class Db {
 	 * @return 事务实例
 	 */
 	public Transaction beginTransaction() {
-		Transaction tx = this.txManager.createTransaction();
-		TransactionThreadLocal.set(this.name, tx);
-		return tx;
+		TxStrategy strategy = TxStrategyThreadLocal.get();
+		if(strategy == null) {
+			strategy = TxStrategy.DEFAULT_TX_STRATEGY;
+		}
+		
+		TxType txType = strategy.getType();
+		ScopeTransaction curTx = ScopeTransactionThreadLocal.get(this.name);
+		Transaction scopeTx = createScopeTransaction(curTx, strategy);
+		
+		return scopeTx;
 	}
 	
 	/**
@@ -88,21 +111,31 @@ public class Db {
 	 * @return
 	 */
 	public Transaction getCurrentTransaction() {
-		return TransactionThreadLocal.get(this.name);
+//		return TransactionThreadLocal.get(this.name);
+		return ScopeTransactionThreadLocal.get(this.name);
 	}
 	
 	/**
 	 * 提交当前事务
 	 */
 	public void commitTransaction() {
-		TransactionThreadLocal.get(this.name).commit();
+//		TransactionThreadLocal.get(this.name).commit();
+		ScopeTransactionThreadLocal.get(this.name).commit();
+	}
+	
+	/**
+	 * 回滚当前事务
+	 */
+	public void rollbackTransaction() {
+		ScopeTransactionThreadLocal.get(this.name).rollback();
 	}
 	
 	/**
 	 * 结束一个事务
 	 */
 	public void endTransaction() {
-		TransactionThreadLocal.get(this.name).end();
+//		TransactionThreadLocal.get(this.name).end();
+		ScopeTransactionThreadLocal.get(this.name).end();
 	}
 	
 	/**
@@ -173,34 +206,134 @@ public class Db {
 		return command;
 	}
 	
+	/**
+	 * 保存一个实体
+	 * 
+	 * @param entity
+	 * @return
+	 */
 	public Object save(Object entity) {
 		Transaction transaction = getTransaction();
 		SaveAction saveAction = new SaveAction(entity, transaction);
 		return saveAction.execute();
 	}
 	
+	/**
+	 * 删除一个实体
+	 * 
+	 * @param entity
+	 * @return
+	 */
 	public int delete(Object entity) {
 		Transaction transaction = getTransaction();
 		DeleteAction deleteAction = new DeleteAction(entity, transaction);
 		return deleteAction.execute();
 	}
 	
+	/**
+	 * 根据ID删除一个实体
+	 * 
+	 * @param entityClass
+	 * @param id
+	 * @return
+	 */
 	public int delete(Class entityClass, Object id) {
 		Transaction transaction = getTransaction();
 		DeleteAction deleteAction = new DeleteAction(entityClass, id, transaction);
 		return deleteAction.execute();
 	}
 	
+	/**
+	 * 更新一个实体
+	 * 
+	 * @param entity
+	 * @return
+	 */
 	public int update(Object entity) {
 		Transaction transaction = getTransaction();
 		UpdateAction updateAction = new UpdateAction(entity, transaction);
 		return updateAction.execute();
 	}
 	
+	/**
+	 * 准备更新某一个实体
+	 * 
+	 * @param entityClass
+	 * @param id
+	 * @return
+	 */
 	public UpdateAction update(Class entityClass, Object id) {
 		Transaction transaction = getTransaction();
 		UpdateAction updateAction = new UpdateAction(entityClass, id, transaction);
 		return updateAction;
+	}
+	
+	public void tx(TxRunnable runnable) {
+		tx(TxStrategy.DEFAULT_TX_STRATEGY, runnable);
+	}
+	
+	/**
+	 * 执行一段事务代码，没有返回值
+	 * 
+	 * @param runnable
+	 */
+	public void tx(TxStrategy strategy, TxRunnable runnable) {
+		logger.debug("Init transaction strategy before method.");
+		
+		//对已有ScopeTransaction增加引用计数
+		ScopeTransactionManager.increaseRefCount();
+		
+		if(strategy == null) {
+			strategy = TxStrategy.DEFAULT_TX_STRATEGY;
+		}
+		TxStrategyThreadLocal.set(strategy);
+		
+		try {
+			runnable.run();
+			ScopeTransactionManager.success();
+		}catch(Throwable e) {
+			logger.debug("Handle transaction after throwing.");
+			ScopeTransactionManager.error(e);
+		}finally{
+			logger.debug("Handle transaction after method.");
+			ScopeTransactionManager.end();
+    		ScopeTransactionManager.reduceRefCount();
+		}
+	}
+	
+	public Object tx(TxCallable callable) {
+		return tx(TxStrategy.DEFAULT_TX_STRATEGY, callable);
+	}
+	
+	/**
+	 * 执行一段事务代码，没有返回值
+	 * 
+	 * @param runnable
+	 */
+	public Object tx(TxStrategy strategy, TxCallable callable) {
+		logger.debug("Init transaction strategy before method.");
+		
+		//对已有ScopeTransaction增加引用计数
+		ScopeTransactionManager.increaseRefCount();
+		
+		if(strategy == null) {
+			strategy = TxStrategy.DEFAULT_TX_STRATEGY;
+		}
+		TxStrategyThreadLocal.set(strategy);
+		
+		try {
+			Object r = callable.call();
+			ScopeTransactionManager.success();
+			return r;
+		}catch(Throwable e) {
+			logger.debug("Handle transaction after throwing.");
+			ScopeTransactionManager.error(e);
+			return null;
+		}finally{
+			logger.debug("Handle transaction after method.");
+			ScopeTransactionManager.end();
+    		ScopeTransactionManager.reduceRefCount();
+		}
 	}
 	
 	private Transaction getTransaction() {
@@ -209,6 +342,76 @@ public class Db {
 			transaction = beginTransaction();
 		}
 		return transaction;
+	}
+	
+	/**
+	 * 是否需要创建新的Transaction.
+	 * 
+	 * @param t
+	 * @param strategy
+	 * @return
+	 */
+	private boolean needCreateNewTransaction(Transaction t, TxStrategy strategy) {
+
+		TxType type = strategy.getType();
+		switch (type) {
+		case REQUIRED:
+			return t == null;
+
+		case REQUIRES_NEW:
+			return true;
+
+		case MANDATORY:
+			if (t == null)
+				throw new IdeaJdbcException(IdeaJdbcExceptionCode.TX_STRATEGY_ERR, "Transaction is missing or not active for MANDATORY strategy.");
+			return true;
+
+		case NEVER:
+			if (t != null)
+				throw new IdeaJdbcException(IdeaJdbcExceptionCode.TX_STRATEGY_ERR, "Transaction is exists on NEVER strategy.");
+			return false;
+
+		case SUPPORTS:
+			return false;
+
+		case NOT_SUPPORTED:
+			throw new IdeaJdbcException(IdeaJdbcExceptionCode.TX_STRATEGY_ERR, "NOT_SUPPORTED should already be handled?");
+
+		default:
+			throw new IdeaJdbcException(IdeaJdbcExceptionCode.TX_STRATEGY_ERR, "Should never get here?");
+		}
+	}
+	
+	public ScopeTransaction createScopeTransaction(ScopeTransaction scopeTx, TxStrategy strategy) {
+
+		if (strategy == null) {
+			strategy = TxStrategy.DEFAULT_TX_STRATEGY;
+		}
+		
+		boolean needNewTx = needCreateNewTransaction(scopeTx, strategy);
+        ScopeTransaction newScopeTx = new ScopeTransaction();
+        newScopeTx.setDbName(this.name);
+        newScopeTx.setStrategy(strategy);
+		if(needNewTx) {
+			int isoLevel = 2;
+			TxIsolation isolation = strategy.getIsolation();
+			if (isolation != null) {
+				isoLevel = isolation.getLevel();
+			}
+			Transaction newTx = txManager.createTransaction(strategy.isReadOnly(), strategy.getIsolation());
+			
+			newScopeTx.setNested(false);
+			newScopeTx.setSuspendedTransaction(scopeTx);
+			newScopeTx.setTransaction(newTx);
+			newScopeTx.setNewtx(true);
+        }else{
+        	newScopeTx.setNested(true);
+        	newScopeTx.setNewtx(false);
+        	newScopeTx.setSuspendedTransaction(null);
+			newScopeTx.setTransaction(scopeTx.getTransaction());
+        }
+		ScopeTransactionThreadLocal.set(this.name, newScopeTx);
+		return newScopeTx;
 	}
 	
 	/**

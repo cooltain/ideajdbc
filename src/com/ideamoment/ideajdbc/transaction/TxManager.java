@@ -24,6 +24,15 @@ public interface TxManager {
 	public Transaction createTransaction();
 	
 	/**
+	 * 创建一个新事务
+	 * 
+	 * @param readOnly 是否只读
+	 * @param isolation  事务隔离级别
+	 * @return Transaction 新事务
+	 */
+	public Transaction createTransaction(boolean readOnly, TxIsolation isolation);
+	
+	/**
 	 * 取数据源。
 	 * 
 	 * @return DataSource 数据源

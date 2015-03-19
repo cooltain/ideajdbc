@@ -46,7 +46,7 @@ public class User implements Serializable{
 	@Id(dataItem="C_ID", type=DataItemType.VARCHAR2)
 	private String id;
 	
-	@Property(dataItem="C_NAME", length=64, defaultValue="ZZH", nullable=false)
+	@Property(length=64, defaultValue="ZZH", nullable=false)
 	private String name;
 	
 	private String email;

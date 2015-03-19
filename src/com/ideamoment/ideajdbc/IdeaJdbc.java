@@ -16,6 +16,9 @@ import com.ideamoment.ideajdbc.log.DriverLoggingProxy;
 import com.ideamoment.ideajdbc.server.Db;
 import com.ideamoment.ideajdbc.server.DbManager;
 import com.ideamoment.ideajdbc.transaction.Transaction;
+import com.ideamoment.ideajdbc.transaction.TxCallable;
+import com.ideamoment.ideajdbc.transaction.TxRunnable;
+import com.ideamoment.ideajdbc.transaction.TxStrategy;
 
 /**
  * @author Chinakite
@@ -184,5 +187,39 @@ public class IdeaJdbc {
 		defaultDb().endTransaction();
 	}
 	
-
+	/**
+	 * 执行一段事务代码块
+	 * 
+	 * @param r
+	 */
+	public static void tx(TxRunnable r) {
+		defaultDb().tx(TxStrategy.DEFAULT_TX_STRATEGY, r);
+	}
+	
+	/**
+	 * 执行一段事务代码块
+	 * 
+	 * @param r
+	 */
+	public static void tx(TxStrategy strategy, TxRunnable r) {
+		defaultDb().tx(strategy, r);
+	}
+	
+	/**
+	 * 执行一段事务代码块
+	 * 
+	 * @param r
+	 */
+	public static Object tx(TxCallable c) {
+		return defaultDb().tx(TxStrategy.DEFAULT_TX_STRATEGY, c);
+	}
+	
+	/**
+	 * 执行一段事务代码块
+	 * 
+	 * @param r
+	 */
+	public static Object tx(TxStrategy strategy, TxCallable c) {
+		return defaultDb().tx(strategy, c);
+	}
 }

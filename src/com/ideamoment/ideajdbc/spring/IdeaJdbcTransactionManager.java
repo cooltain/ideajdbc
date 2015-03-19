@@ -8,7 +8,6 @@ package com.ideamoment.ideajdbc.spring;
 
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.List;
 
 import javax.sql.DataSource;
 
@@ -104,7 +103,9 @@ public class IdeaJdbcTransactionManager extends
 	protected Object doGetTransaction() throws TransactionException {
 		System.out.println("Get Transaction ...");
 		Db defaultDb = DbManager.getInstance().getDefaultDb();
-		Transaction springTx = defaultDb.beginTransaction();
+		Transaction springTx = defaultDb.getCurrentTransaction();
+		if(springTx == null)
+			springTx = defaultDb.beginTransaction();
 		return springTx;
 	}
 
@@ -124,5 +125,11 @@ public class IdeaJdbcTransactionManager extends
 	private DataSource getDefaultDataSource() {
 		return DbManager.getInstance().getDefaultDb().getDbConfig().getDataSource();
 	}
+	
+	@Override  
+    protected boolean isExistingTransaction(Object transaction) {  
+		SpringJdbcTransaction springTx = (SpringJdbcTransaction)transaction;  
+        return (springTx.getHolder() != null && springTx.getHolder().isOpen());  
+    }  
 
 }

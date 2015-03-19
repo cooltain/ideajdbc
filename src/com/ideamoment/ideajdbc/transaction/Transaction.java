@@ -75,4 +75,5 @@ public interface Transaction {
 	 * @return DB名称
 	 */
 	public String getDbName();
+	
 }

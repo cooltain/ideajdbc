@@ -26,6 +26,9 @@ public class TestGen implements Serializable {
 	@Id(dataItem="C_ID", type=DataItemType.VARCHAR, length=32, generator="uuid")
 	private String id;
 	
+	/**
+	 * 姓名
+	 */
 	@Property(dataItem="C_NAME", length=200)
 	private String name;
 	

@@ -33,4 +33,6 @@ public final class IdeaJdbcExceptionCode {
 	public static final String QUERY_ERR = "JDBC-10011";    //查询方法异常
 	
 	public static final String GENERATOR_ERR = "JDBC-10012";    //主键生成器异常
+	
+	public static final String TX_STRATEGY_ERR = "JDBC-10013";    //事务策略异常
 }

@@ -26,6 +26,15 @@ public class TransactionThreadLocal {
     }
     
     /**
+     * 取得当前线程中打开的所有事务
+     * 
+     * @return
+     */
+    public static TransactionMap allTransactions() {
+    	return local.get();
+    }
+    
+    /**
      * 根据给定的db名称取得当前的包含状态的事务（TxState）。
      * 当然，只是当前线程的。
      * 
@@ -91,7 +100,7 @@ public class TransactionThreadLocal {
      * @param dbName
      * @param trans
      */
-    public static void replace(String dbName, JdbcTransaction trans) {
+    public static void replace(String dbName, Transaction trans) {
         getState(dbName).replace(trans);
     }
 }

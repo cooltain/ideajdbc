@@ -32,8 +32,14 @@ public class DefaultTxManager implements TxManager {
 	 */
 	@Override
 	public Transaction createTransaction() {
+		return createTransaction(false, TxIsolation.READ_COMMITED);
+	}
+	
+	public Transaction createTransaction(boolean readOnly, TxIsolation isolation) {
 		try {
 			Connection connection = dataSource.getConnection();
+			connection.setReadOnly(readOnly);
+			connection.setTransactionIsolation(isolation.getLevel());
 			connection.setAutoCommit(false);
 			Transaction transaction = new JdbcTransaction(this.dbName, connection);
 			return transaction;

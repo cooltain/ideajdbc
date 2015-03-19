@@ -7,6 +7,7 @@
 package com.ideamoment.ideajdbc.transaction;
 
 import java.util.HashMap;
+import java.util.Set;
 
 import com.ideamoment.ideajdbc.exception.IdeaJdbcException;
 import com.ideamoment.ideajdbc.exception.IdeaJdbcExceptionCode;
@@ -35,6 +36,10 @@ public class TransactionMap {
             map.put(dbName, state);
         }
         return state;
+    }
+    
+    public Set<String> keySet() {
+    	return map.keySet();
     }
     
     /**
@@ -97,7 +102,7 @@ public class TransactionMap {
         /**
          * 覆盖事务。
          */
-        public void replace(JdbcTransaction trans) {
+        public void replace(Transaction trans) {
             transaction = trans;
         }
     }

@@ -13,19 +13,9 @@
                         http://www.springframework.org/schema/tx/spring-tx-2.5.xsd">
 	<!-- 开启注解处理器 -->
 	<context:annotation-config />
-	 
-	<bean id="ideaJdbcInitBean"
-	      class="com.ideamoment.ideajdbc.spring.IdeaJdbcInitializingBean">
-	      <property name="config" value="ideajdbc.properties"></property>
-	</bean>
-	 
-	<!-- 注册一个JDBC数据源事务管理器 -->  
-	<bean id="txManager"   
-		  class="com.ideamoment.ideajdbc.spring.IdeaJdbcTransactionManager">  
-	</bean>
-	      
-	<!-- 基于@Transactional注解方式的事务管理 -->  
-	<tx:annotation-driven transaction-manager="txManager"/>  
+	
+	<aop:aspectj-autoproxy proxy-target-class="true"></aop:aspectj-autoproxy>
+    <bean id="ideaJdbcTxAspect" class="com.ideamoment.ideajdbc.spring.IdeaJdbcTransactionAspect" /> 
 	 
 	<!-- 注册一个UserDaoImpl实例名称为dao -->  
 	<bean id="dao" class="com.ideamoment.ideajdbc.spring.TestDao"/>

@@ -8,6 +8,9 @@ package com.ideamoment.ideajdbc.transaction;
 import java.sql.Connection;
 import java.sql.SQLException;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.ideamoment.ideajdbc.exception.IdeaJdbcException;
 import com.ideamoment.ideajdbc.exception.IdeaJdbcExceptionCode;
 
@@ -16,6 +19,8 @@ import com.ideamoment.ideajdbc.exception.IdeaJdbcExceptionCode;
  * 
  */
 public class JdbcTransaction implements Transaction {
+	
+	private static Logger logger = LoggerFactory.getLogger(JdbcTransaction.class);
 
 	// 事务状态为非活动时的异常信息。
 	private static final String illegalStateMessage = "Transaction is Inactive";
@@ -35,6 +40,8 @@ public class JdbcTransaction implements Transaction {
 	 */
 	protected String dbName;
 
+	public JdbcTransaction(){}
+	
 	/**
 	 * 构造函数
 	 * @param dbName
@@ -67,8 +74,9 @@ public class JdbcTransaction implements Transaction {
 			throw new IllegalStateException(illegalStateMessage);
 		}
 		try {
+			int connHashCode = connection.hashCode();
 			connection.commit();
-			deactivate();
+			logger.debug("Connection [{}] commit.", connHashCode);
 		} catch (SQLException e) {
 			throw new IdeaJdbcException(IdeaJdbcExceptionCode.TX_COMMIT_ERR, "Transaction commit error.", e);
 		}
@@ -85,8 +93,9 @@ public class JdbcTransaction implements Transaction {
 			throw new IllegalStateException(illegalStateMessage);
 		}
 		try {
+			int connHashCode = connection.hashCode();
 			connection.rollback();
-			deactivate();
+			logger.debug("Connection [{}] rollback.", connHashCode);
 		} catch (SQLException e) {
 			throw new IdeaJdbcException(IdeaJdbcExceptionCode.TX_ROLLBACK_ERR, "Transaction rollback error.", e);
 		}
@@ -100,7 +109,7 @@ public class JdbcTransaction implements Transaction {
 	@Override
 	public void end() {
 		if (isActive()) {
-			rollback();
+			deactivate();
 		}
 	}
 

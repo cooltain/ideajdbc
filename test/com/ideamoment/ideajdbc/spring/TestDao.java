@@ -9,7 +9,6 @@ package com.ideamoment.ideajdbc.spring;
 import static org.junit.Assert.assertEquals;
 
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import com.ideamoment.ideadata.description.User;
 import com.ideamoment.ideajdbc.IdeaJdbc;
@@ -25,16 +24,15 @@ import com.ideamoment.ideajdbc.transaction.Transaction;
  */
 @Service
 public class TestDao {
-	@Transactional
-	public Transaction testCommit() {
+	@IdeaJdbcTx(readOnly=true)
+	public Transaction testQuery() {
 		Db db = IdeaJdbc.db("mysql");
-		Transaction tx = db.getCurrentTransaction();
 		User user = db.find(User.class, "1");
 		assertEquals("1", user.getId());
-		return tx;
+		return db.getCurrentTransaction();
 	}
 
-	@Transactional
+	@IdeaJdbcTx
 	public void testRollback() {
 		Db db = IdeaJdbc.db("mysql");
 		
@@ -46,7 +44,7 @@ public class TestDao {
 		throw new RuntimeException("Just for test.");
 	}
 	
-	@Transactional
+	@IdeaJdbcTx
 	public void testMultiOperation() {
 		BeanForUpdate bfu = IdeaJdbc.find(BeanForUpdate.class, "1");
 		bfu.setName("IdeaMoment");

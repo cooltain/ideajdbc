@@ -30,7 +30,7 @@ public class TestSpringTransaction extends AbstractTestCase {
 		String[] paths = {"classpath:com/ideamoment/ideajdbc/spring/context.xml"};
 		ApplicationContext ctx =new ClassPathXmlApplicationContext(paths);
 		TestDao dao = (TestDao) ctx.getBean("dao");
-		Transaction tx = dao.testCommit();
+		Transaction tx = dao.testQuery();
 		assertNotNull(tx);
 		assertFalse(tx.isActive());
 		System.out.println("end");
