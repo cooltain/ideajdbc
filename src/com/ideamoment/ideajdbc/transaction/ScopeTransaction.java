@@ -103,6 +103,8 @@ public class ScopeTransaction implements Transaction{
 				this.transaction.end();
 				if(suspendedTransaction != null) {
 					ScopeTransactionThreadLocal.set(this.dbName, this.suspendedTransaction);
+				}else{
+				    ScopeTransactionThreadLocal.set(this.dbName, null);
 				}
 				logger.debug("Transaction end on final.");
 			}
