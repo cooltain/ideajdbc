@@ -95,9 +95,9 @@ public class SqlExecutor {
 				DataItemType paramType = sp.getType();
 				Object paramValue = sp.getParamValue();
 				
-				if(paramType == null) {
+				if(paramType == null||paramValue==null) {
 					pstmt.setObject(i, paramValue);
-					return;
+					continue;
 				}
 				
 				switch (paramType) {
