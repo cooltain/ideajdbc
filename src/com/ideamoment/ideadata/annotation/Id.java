@@ -45,5 +45,5 @@ public @interface Id{
 	 * 
 	 * @return
 	 */
-	public String generator() default "assign";
+	public String generator() default "assigned";
 }
