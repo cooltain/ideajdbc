@@ -199,8 +199,9 @@ public class DataSourceConfig {
 		
 		//处理日志
 		if(IdeaDataConfiguration.getBoolean("ideajdbc.log", false)) {
-			String[] tmp = url.split(":");
-			url = tmp[0] + ":ideajdbc:" + tmp[1] + ":" + tmp[2];
+		    String[] protocolTmp = url.split("://");
+			String[] tmp = protocolTmp[0].split(":");
+			url = tmp[0] + ":ideajdbc:" + tmp[1] + "://" + protocolTmp[1];
 			if(url.indexOf('?') > 0) {
 				url = url + "&";
 			}else{
