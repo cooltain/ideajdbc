@@ -10,6 +10,7 @@ import com.ideamoment.ideadata.description.PropertyDescriptionDecoration;
 import com.ideamoment.ideajdbc.action.Command;
 import com.ideamoment.ideajdbc.action.Query;
 import com.ideamoment.ideajdbc.action.UpdateAction;
+import com.ideamoment.ideajdbc.configuration.DbConfig;
 import com.ideamoment.ideajdbc.configuration.IdeaJdbcConfiguration;
 import com.ideamoment.ideajdbc.description.DataItemUpperDecoration;
 import com.ideamoment.ideajdbc.log.DriverLoggingProxy;
@@ -221,5 +222,35 @@ public class IdeaJdbc {
 	 */
 	public static Object tx(TxStrategy strategy, TxCallable c) {
 		return defaultDb().tx(strategy, c);
+	}
+	
+	/**
+	 * 根据传入的DbConfig增加数据库.
+	 * 使用方法如下:
+	 * <pre>
+	 * DbConfig dbConfig = new DbConfig();
+	 * dbConfig.setName("newDb");
+	 * dbConfig.setTxManagerClazz("com.ideamoment.ideajdbc.transaction.DefaultTxManager");
+	 * 
+	 * DataSourceConfig dsConfig = new DataSourceConfig();
+	 * dsConfig.setUsername("newuser");
+	 * dsConfig.setPassword("newpwd");
+	 * dsConfig.setUrl("dbURL");
+	 * dsConfig.setDriver("com.mysql.driver.Driver");
+	 * dsConfig.setMinConnections(1);
+	 * dsConfig.setMaxConnections(100);
+	 * dsConfig.setMaxConnectionLifetime(1440000);
+	 * dsConfig.setMaxActiveTime(300);
+	 * dsConfig.setHeartbeatSql("select 1");
+	 * 
+	 * dbConfig.setDataSourceConfig(dsConfig);
+	 * 
+	 * IdeaJdbc.addDb(dbConfig);
+	 * </pre>
+	 * 
+	 * @param dbConfig 数据库配置
+	 */
+	public static Db addDb(DbConfig dbConfig) {
+	    return DbManager.getInstance().getWithCreate(dbConfig);
 	}
 }

@@ -140,8 +140,8 @@ public class DbManager {
 				Class txManagerClass = Class.forName(txManagerName);
 				Constructor method = txManagerClass.getDeclaredConstructor(DbConfig.class);
 				TxManager txManager = (TxManager)(method.newInstance(dbConfig));
-				Db channel = new Db(dbConfig, txManager);
-				return channel;
+				Db db = new Db(dbConfig, txManager);
+				return db;
 			} catch (InstantiationException e) {
 				e.printStackTrace();
 				throw new IdeaJdbcException(IdeaJdbcExceptionCode.TX_MGR_INIT_ERR, "Can not get transaction manager instance of " + txManagerName, e);
@@ -183,6 +183,17 @@ public class DbManager {
 			}
 			return db;
 		}
+	}
+	
+	public Db getWithCreate(DbConfig dbConfig) {
+	    synchronized (monitor) {
+            Db db = syncMap.get(dbConfig.getName());
+            if(db == null) {
+                db = createDb(dbConfig);
+                register(db, false);
+            }
+            return db;
+        }
 	}
 	
 	public void register(Db db, boolean isDefault) {

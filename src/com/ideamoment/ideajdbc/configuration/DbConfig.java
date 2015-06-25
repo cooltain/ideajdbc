@@ -24,6 +24,10 @@ public class DbConfig {
 		return txManagerClazz;
 	}
 
+	public void setTxManagerClazz(String txManagerClazz) {
+	    this.txManagerClazz = txManagerClazz;
+	}
+	
 	public DataSource getDataSource() {
 		return dataSource;
 	}
