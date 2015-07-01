@@ -214,7 +214,7 @@ public class EntityDescriptionFactory {
 		if(StringUtils.isEmpty(dataItem)) {
 			propertyDescription.setDataItem(field.getName());
 		}else{
-			propertyDescription.setDataItem(dataItem.trim());
+			propertyDescription.setDataItem(dataItem);
 		}
 		
 		int length = propInfo.length();
@@ -245,7 +245,7 @@ public class EntityDescriptionFactory {
 		if(StringUtils.isEmpty(dataItem)) {
 			idDescription.setDataItem(field.getName());
 		}else{
-			idDescription.setDataItem(dataItem.trim());
+			idDescription.setDataItem(dataItem);
 		}
 		
 		int length = idInfo.length();
