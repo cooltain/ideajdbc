@@ -103,6 +103,11 @@ public class ResultHandler<T> {
 			for(int i=1; i<=columnCount; i++) {
 				String columnName = rsMetaData.getColumnLabel(i);
 				SelectColumnInfo colInfo = parseColumnInfo(columnName, entityDescription, query);
+				//这里处理的是查出了字段但是实体中没有映射的情况，
+				//后面要酌情考虑要不要支持，暂时先直接continue
+				if(StringUtils.isEmpty(colInfo.getPropName())){
+				    continue;
+				}
 				colInfoes.add(colInfo);
 				
 				String colTableName = colInfo.getTableName();
