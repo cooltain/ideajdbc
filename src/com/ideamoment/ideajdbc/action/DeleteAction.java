@@ -11,11 +11,11 @@ import java.util.List;
 
 import org.apache.commons.beanutils.PropertyUtils;
 
-import com.ideamoment.ideadata.description.EntityDescription;
-import com.ideamoment.ideadata.description.EntityDescriptionFactory;
 import com.ideamoment.ideadata.description.IdDescription;
 import com.ideamoment.ideajdbc.actionparser.JdbcSql;
 import com.ideamoment.ideajdbc.actionparser.JdbcSqlParam;
+import com.ideamoment.ideajdbc.description.JdbcEntityDescription;
+import com.ideamoment.ideajdbc.description.JdbcEntityDescriptionFactory;
 import com.ideamoment.ideajdbc.executor.SqlExecutor;
 import com.ideamoment.ideajdbc.transaction.Transaction;
 
@@ -69,7 +69,7 @@ public class DeleteAction<T> extends AbstractAction<T> implements Action<T> {
 	}
 	
 	private JdbcSql parseEntityToSql() {
-		EntityDescription entityDesc = EntityDescriptionFactory.getInstance().getEntityDescription(this.entityClass);
+	    JdbcEntityDescription entityDesc = JdbcEntityDescriptionFactory.getInstance().getEntityDescription(this.entityClass);
 		IdDescription idDesc = entityDesc.getIdDescription();
 		
 		StringBuffer sb = new StringBuffer();

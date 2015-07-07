@@ -25,6 +25,8 @@ import com.ideamoment.ideadata.description.EntityDescriptionFactory;
 import com.ideamoment.ideadata.description.PropertyDescription;
 import com.ideamoment.ideadata.description.RefDescription;
 import com.ideamoment.ideajdbc.action.Query;
+import com.ideamoment.ideajdbc.description.JdbcEntityDescription;
+import com.ideamoment.ideajdbc.description.JdbcEntityDescriptionFactory;
 import com.ideamoment.ideajdbc.exception.IdeaJdbcException;
 import com.ideamoment.ideajdbc.exception.IdeaJdbcExceptionCode;
 import com.ideamoment.ideajdbc.util.DateUtil;
@@ -89,7 +91,7 @@ public class ResultHandler<T> {
 	}
 	
 	public List handleResultToEntity(ResultSet rs, Class entityClass, Query query, boolean isUnique) {
-		EntityDescription entityDescription = EntityDescriptionFactory.getInstance().getEntityDescription(entityClass);
+	    JdbcEntityDescription entityDescription = JdbcEntityDescriptionFactory.getInstance().getEntityDescription(entityClass);
 		Map<Class, Map<Object, Object>> entityCache = new HashMap<Class, Map<Object, Object>>();
 		try {
 			ResultSetMetaData rsMetaData = rs.getMetaData();
@@ -126,8 +128,7 @@ public class ResultHandler<T> {
 						
 						RefDescription refDescription = entityDescription.getRefDescription(propName);
 						Class refEntityClass = refDescription.getEntityClass();
-						
-						refEntityDescription = EntityDescriptionFactory.getInstance().getEntityDescription(refEntityClass);
+						refEntityDescription = JdbcEntityDescriptionFactory.getInstance().getEntityDescription(refEntityClass);
 						mapperEntity.setEntityDescription(refEntityDescription);
 						
 						rowMapper.addRefEntity(propName, mapperEntity);
@@ -206,7 +207,7 @@ public class ResultHandler<T> {
 							}
 						}else{    //如果关联实体没在缓存中
 							Class refEntityClass = refDesc.getEntityClass();
-							EntityDescription refEntityDesc = EntityDescriptionFactory.getInstance().getEntityDescription(refEntityClass);
+							JdbcEntityDescription refEntityDesc = JdbcEntityDescriptionFactory.getInstance().getEntityDescription(refEntityClass);
 							
 							refEntityObj = refEntityClass.newInstance();
 							PropertyUtils.setProperty(refEntityObj, mapperEntity.getEntityDescription().getIdDescription().getName(), refObjId);
@@ -385,7 +386,7 @@ public class ResultHandler<T> {
 				}
 				RefDescription refDesc = entityDescription.getRefDescription(propName);
 				Class refEntity = refDesc.getEntityClass();
-				EntityDescription refEntityDescription = EntityDescriptionFactory.getInstance().getEntityDescription(refEntity);
+				JdbcEntityDescription refEntityDescription = JdbcEntityDescriptionFactory.getInstance().getEntityDescription(refEntity);
 				
 				colInfo = retriveEntityPropName(refEntityDescription, colInfo);
 			}else{

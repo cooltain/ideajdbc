@@ -19,6 +19,8 @@ import com.ideamoment.ideadata.description.PropertyDescription;
 import com.ideamoment.ideadata.util.TypeUtil;
 import com.ideamoment.ideajdbc.actionparser.JdbcSql;
 import com.ideamoment.ideajdbc.actionparser.JdbcSqlParam;
+import com.ideamoment.ideajdbc.description.JdbcEntityDescription;
+import com.ideamoment.ideajdbc.description.JdbcEntityDescriptionFactory;
 import com.ideamoment.ideajdbc.executor.SqlExecutor;
 import com.ideamoment.ideajdbc.transaction.Transaction;
 
@@ -93,7 +95,7 @@ public class UpdateAction<T> extends AbstractAction<T> implements Action<T> {
 	
 	private JdbcSql parseEntityToSql() {
 		try {
-			EntityDescription entityDesc = EntityDescriptionFactory.getInstance().getEntityDescription(this.entityClass);
+		    JdbcEntityDescription entityDesc = JdbcEntityDescriptionFactory.getInstance().getEntityDescription(this.entityClass);
 			IdDescription idDesc = entityDesc.getIdDescription();
 			
 			StringBuffer sb = new StringBuffer();

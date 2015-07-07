@@ -41,7 +41,11 @@ public class SqlQueryAction<T> extends AbstractAction<T> implements Query<T> {
 	private Map<Object, Parameter> parameters = new HashMap<Object, Parameter>();		//参数列表
 	private Map<String, String> populates = new HashMap<String, String>();		//要自动组装关联的别名映射表，key为查询结果的别名，value为字段名称
 	
-	public SqlQueryAction() {
+	private boolean partitionQuery = false;
+	private Object partitionValue;
+	
+	
+    public SqlQueryAction() {
 	}
 	
 	/**
@@ -442,10 +446,33 @@ public class SqlQueryAction<T> extends AbstractAction<T> implements Query<T> {
 			throw new IdeaJdbcException(IdeaJdbcExceptionCode.QUERY_ERR, "No special entityClass in unique method.");
 		}
 	}
+	
+	/**
+     * @return the partitionQuery
+     */
+    public boolean isPartitionQuery() {
+        return partitionQuery;
+    }
+    
+    /**
+     * @param partitionQuery the partitionQuery to set
+     */
+    public void setPartitionQuery(boolean partitionQuery) {
+        this.partitionQuery = partitionQuery;
+    }
+    
+    /**
+     * @return the partitionValue
+     */
+    public Object getPartitionValue() {
+        return partitionValue;
+    }
+    
+    /**
+     * @param partitionValue the partitionValue to set
+     */
+    public void setPartitionValue(Object partitionValue) {
+        this.partitionValue = partitionValue;
+    }
 
-//	@Override
-//	public Map map() {
-//		// TODO Auto-generated method stub
-//		return null;
-//	}
 }

@@ -7,7 +7,6 @@ package com.ideamoment.ideadata.description;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
@@ -24,9 +23,6 @@ import com.ideamoment.ideadata.annotation.UNSPEC_CLASS;
 import com.ideamoment.ideadata.exception.IdeaDataException;
 import com.ideamoment.ideadata.util.ReflectUtil;
 import com.ideamoment.ideadata.util.TypeUtil;
-import com.ideamoment.ideajdbc.annotation.Sql;
-import com.ideamoment.ideajdbc.annotation.SqlQuery;
-import com.ideamoment.ideajdbc.annotation.SqlUpdate;
 
 /**
  * @author Chinakite
@@ -34,11 +30,11 @@ import com.ideamoment.ideajdbc.annotation.SqlUpdate;
  */
 public class EntityDescriptionFactory {
 	
-	private static final EntityDescriptionFactory factory = new EntityDescriptionFactory();
+	protected static final EntityDescriptionFactory factory = new EntityDescriptionFactory();
 	
-	private List<PropertyDescriptionDecoration> propertyDecorations = new ArrayList<PropertyDescriptionDecoration>();
+	protected List<PropertyDescriptionDecoration> propertyDecorations = new ArrayList<PropertyDescriptionDecoration>();
 	
-	private EntityDescriptionFactory(){
+	protected EntityDescriptionFactory(){
 	}
 	
 	private final  Logger logger  =  LoggerFactory.getLogger(EntityDescriptionCache.class);
@@ -62,42 +58,37 @@ public class EntityDescriptionFactory {
 				throw new IdeaDataException("The class " + clazz.getName() + " is not annotated by @Entity.");
 			}else{
 				EntityDescription entityDescription = new EntityDescription();
-				//获取EntityDescriptor的基本信息
-				entityDescription.setEntityClazz(clazz);
-				
-				Entity entityInfo = (Entity)clazz.getAnnotation(Entity.class);
-				String dataSet = entityInfo.dataSet();
-				
-				if(StringUtils.isEmpty(dataSet)) {	//如果dataSet没有配置，使用类名首字每小写做为数据集名称
-					entityDescription.setDataSet(clazz.getSimpleName());
-				}else{
-					entityDescription.setDataSet(dataSet);
-				}
-				
-				//加载注解的Sql信息
-				if(clazz.isAnnotationPresent(Sql.class)) {
-					Sql sqlInfo = (Sql)clazz.getAnnotation(Sql.class);
-					//注解的查询语句
-					SqlQuery[] sqlQueries = sqlInfo.queries();
-					for(SqlQuery sqlQuery : sqlQueries) {
-						entityDescription.addSqlQuery(sqlQuery.name(), sqlQuery.sql());
-					}
-					//注解的更新语句
-					SqlUpdate[] sqlUpdates = sqlInfo.updates();
-					for(SqlUpdate sqlUpdate : sqlUpdates) {
-						entityDescription.addSqlUpdate(sqlUpdate.name(), sqlUpdate.sql());
-					}
-				}
-				
-				//获取PropertyDescriptor列表信息	
-				List<Field> fields = ReflectUtil.getAllFieldsList(clazz);
-				assemblePropertyDescriptor(clazz, entityDescription, fields);
+				assembleEntityDescription(clazz, entityDescription);
 				
 				EntityDescriptionCache.getInstance().put(clazz.getName(), entityDescription);
 				return entityDescription;
 			}
 		}
 	}
+
+    /**
+     * @param clazz
+     * @param entityDescription
+     */
+    protected void assembleEntityDescription(Class clazz,
+                                             EntityDescription entityDescription) {
+
+        //获取EntityDescriptor的基本信息
+        entityDescription.setEntityClazz(clazz);
+        
+        Entity entityInfo = (Entity)clazz.getAnnotation(Entity.class);
+        String dataSet = entityInfo.dataSet();
+        
+        if(StringUtils.isEmpty(dataSet)) {	//如果dataSet没有配置，使用类名首字每小写做为数据集名称
+        	entityDescription.setDataSet(clazz.getSimpleName());
+        }else{
+        	entityDescription.setDataSet(dataSet);
+        }
+        
+        //获取PropertyDescriptor列表信息	
+        List<Field> fields = ReflectUtil.getAllFieldsList(clazz);
+        assemblePropertyDescriptor(clazz, entityDescription, fields);
+    }
 	
 	/**
 	 * 

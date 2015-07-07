@@ -8,8 +8,6 @@ package com.ideamoment.ideajdbc.server;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.ideamoment.ideadata.description.EntityDescription;
-import com.ideamoment.ideadata.description.EntityDescriptionFactory;
 import com.ideamoment.ideajdbc.action.Command;
 import com.ideamoment.ideajdbc.action.DeleteAction;
 import com.ideamoment.ideajdbc.action.Query;
@@ -18,6 +16,8 @@ import com.ideamoment.ideajdbc.action.SqlCommand;
 import com.ideamoment.ideajdbc.action.SqlQueryAction;
 import com.ideamoment.ideajdbc.action.UpdateAction;
 import com.ideamoment.ideajdbc.configuration.DbConfig;
+import com.ideamoment.ideajdbc.description.JdbcEntityDescription;
+import com.ideamoment.ideajdbc.description.JdbcEntityDescriptionFactory;
 import com.ideamoment.ideajdbc.exception.IdeaJdbcException;
 import com.ideamoment.ideajdbc.exception.IdeaJdbcExceptionCode;
 import com.ideamoment.ideajdbc.transaction.ScopeTransaction;
@@ -148,7 +148,7 @@ public class Db {
 	public <T> T find(Class<T> clazz, Object id) {
 		Transaction transaction = getTransaction();
 		
-		EntityDescription entityDesc = EntityDescriptionFactory.getInstance().getEntityDescription(clazz);
+		JdbcEntityDescription entityDesc = JdbcEntityDescriptionFactory.getInstance().getEntityDescription(clazz);
 		String idDataItem = entityDesc.getIdDescription().getDataItem();
 		
 		String sql = "select " + entityDesc.allDataItemString() + " from " + entityDesc.getDataSet() + " where " + idDataItem + " = :id";
@@ -180,6 +180,21 @@ public class Db {
 		Transaction transaction = getTransaction();
 		Query sqlQuery = new SqlQueryAction(clazz, transaction);
 		return sqlQuery;
+	}
+	
+	/**
+	 * 分区查询
+	 * 
+	 * @param clazz
+	 * @param partitionValue
+	 * @return
+	 */
+	public Query queryByPartition(Class clazz, Object partitionValue) {
+	    Transaction transaction = getTransaction();
+        Query sqlQuery = new SqlQueryAction(clazz, transaction);
+        sqlQuery.setPartitionQuery(true);
+        sqlQuery.setPartitionValue(partitionValue);
+        return sqlQuery;
 	}
 	
 	/**

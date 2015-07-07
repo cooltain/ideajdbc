@@ -18,6 +18,8 @@ import com.ideamoment.ideadata.description.PropertyDescription;
 import com.ideamoment.ideadata.generator.GeneratorFactory;
 import com.ideamoment.ideajdbc.actionparser.JdbcSql;
 import com.ideamoment.ideajdbc.actionparser.JdbcSqlParam;
+import com.ideamoment.ideajdbc.description.JdbcEntityDescription;
+import com.ideamoment.ideajdbc.description.JdbcEntityDescriptionFactory;
 import com.ideamoment.ideajdbc.executor.SqlExecutor;
 import com.ideamoment.ideajdbc.transaction.Transaction;
 
@@ -55,7 +57,7 @@ public class SaveAction<T> extends AbstractAction<T> implements Action<T> {
 	}
 
 	private JdbcSql parseEntityToSql() {
-		EntityDescription entityDescription = EntityDescriptionFactory.getInstance().getEntityDescription(entity.getClass());
+	    JdbcEntityDescription entityDescription = JdbcEntityDescriptionFactory.getInstance().getEntityDescription(entity.getClass());
 		
 		List<JdbcSqlParam> params = new ArrayList<JdbcSqlParam>();
 		

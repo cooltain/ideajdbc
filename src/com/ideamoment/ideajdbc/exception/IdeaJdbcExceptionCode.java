@@ -35,4 +35,6 @@ public final class IdeaJdbcExceptionCode {
 	public static final String GENERATOR_ERR = "JDBC-10012";    //主键生成器异常
 	
 	public static final String TX_STRATEGY_ERR = "JDBC-10013";    //事务策略异常
+	
+	public static final String PARTITION_MAPPING_ERR = "JDBC-10014";     //表分区字段映射错误
 }

@@ -6,20 +6,11 @@
  */
 package com.ideamoment.ideajdbc.actionparser;
 
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Stack;
-
-import com.ideamoment.ideadata.annotation.DataItemType;
-import com.ideamoment.ideadata.description.EntityDescription;
-import com.ideamoment.ideadata.description.EntityDescriptionFactory;
 import com.ideamoment.ideajdbc.action.Action;
-import com.ideamoment.ideajdbc.action.Parameter;
 import com.ideamoment.ideajdbc.action.SqlQueryAction;
-import com.ideamoment.ideajdbc.configuration.IdeaJdbcConfiguration;
+import com.ideamoment.ideajdbc.description.JdbcEntityDescription;
+import com.ideamoment.ideajdbc.description.JdbcEntityDescriptionFactory;
+import com.ideamoment.ideajdbc.description.PartitionDescription;
 import com.ideamoment.ideajdbc.exception.IdeaJdbcException;
 import com.ideamoment.ideajdbc.exception.IdeaJdbcExceptionCode;
 
@@ -45,7 +36,8 @@ public class SqlQueryParser extends AbstractActionParser implements ActionParser
 		if(entityClass == null) {
 			sql = sqlQuery.getSql();
 		}else{
-			EntityDescription entityDescription = EntityDescriptionFactory.getInstance().getEntityDescription(entityClass);
+			JdbcEntityDescription entityDescription = JdbcEntityDescriptionFactory.getInstance().getEntityDescription(entityClass);
+			
 			if(queryName != null) {
 				sql = entityDescription.getSqlQuery(queryName);
 				if(sql == null){
@@ -57,6 +49,14 @@ public class SqlQueryParser extends AbstractActionParser implements ActionParser
 					sql = "select " + entityDescription.allDataItemString() + " from " + entityDescription.getDataSet();
 				}
 			}
+			
+			//如果是分区查询
+			if(sqlQuery.isPartitionQuery()) {
+	            PartitionDescription partDesc = entityDescription.getPartitionDescription();
+	            String partCol = partDesc.getDataItem();
+	            sql = sql + " where " + partCol + " = :" + partDesc.getProperty();
+	            sqlQuery.getParameters().put(partDesc.getProperty(), sqlQuery.getPartitionValue());
+	        }
 		}
 		
 		return buildJdbcSql(sql, sqlQuery.getParameters());

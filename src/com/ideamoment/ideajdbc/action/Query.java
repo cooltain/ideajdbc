@@ -186,4 +186,24 @@ public interface Query<T> extends Action<T> {
 	 * @return
 	 */
 	public Map<String, String> getPopulates();
+	
+	/**
+     * @return the partitionQuery
+     */
+    public boolean isPartitionQuery();
+    
+    /**
+     * @param partitionQuery the partitionQuery to set
+     */
+    public void setPartitionQuery(boolean partitionQuery);
+    
+    /**
+     * @return the partitionValue
+     */
+    public Object getPartitionValue();
+    
+    /**
+     * @param partitionValue the partitionValue to set
+     */
+    public void setPartitionValue(Object partitionValue);
 }

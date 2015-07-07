@@ -18,53 +18,53 @@ import org.slf4j.LoggerFactory;
  *
  */
 public class EntityDescription {
-	private final  Logger logger  =  LoggerFactory.getLogger(EntityDescriptionCache.class);
+	protected final Logger logger  =  LoggerFactory.getLogger(EntityDescriptionCache.class);
 	
 	/**
 	 * 实体类
 	 */
-	private Class entityClazz;
+	protected Class entityClazz;
 	
 	/**
 	 * 数据集名称
 	 */
-	private String dataSet;
+	protected String dataSet;
 	
 	/**
 	 * 主键描述
 	 */
-	private IdDescription idDescription;
+	protected IdDescription idDescription;
 	
 
 	/**
 	 * 实体的所有字段描述信息列表
 	 */
-	private List<PropertyDescription> properties = new ArrayList<PropertyDescription>();
+	protected List<PropertyDescription> properties = new ArrayList<PropertyDescription>();
 	
 	/**
 	 * 使用Java字段名称索引的实体所有字段描述信息
 	 */
-	private Map<String, PropertyDescription> propertyIndexes = new HashMap<String, PropertyDescription>();
+	protected Map<String, PropertyDescription> propertyIndexes = new HashMap<String, PropertyDescription>();
 	
 	/**
 	 * 使用数据库字段名称索引的实体所有字段描述信息
 	 */
-	private Map<String, PropertyDescription> dataItemIndexes = new HashMap<String, PropertyDescription>();
+	protected Map<String, PropertyDescription> dataItemIndexes = new HashMap<String, PropertyDescription>();
 
 	/**
 	 * 在实体上声明的SQL查询语句列表
 	 */
-	private Map<String, String> sqlQueries = new HashMap<String, String>();
+	protected Map<String, String> sqlQueries = new HashMap<String, String>();
 	
 	/**
 	 * 在实体上声明的SQL更新语句列表
 	 */
-	private Map<String, String> sqlUpdates = new HashMap<String, String>();
+	protected Map<String, String> sqlUpdates = new HashMap<String, String>();
 
 	/**
 	 * 引用关系描述信息
 	 */
-	private Map<String, RefDescription> refDescriptions = new HashMap<String, RefDescription>();
+	protected Map<String, RefDescription> refDescriptions = new HashMap<String, RefDescription>();
 	
 	/**
 	 * 

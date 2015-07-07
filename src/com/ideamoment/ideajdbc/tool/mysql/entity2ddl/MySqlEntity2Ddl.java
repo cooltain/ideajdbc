@@ -6,15 +6,12 @@
 package com.ideamoment.ideajdbc.tool.mysql.entity2ddl;
 
 import java.io.File;
-import java.io.IOException;
 import java.net.URL;
-import java.net.URLDecoder;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -28,11 +25,12 @@ import org.slf4j.LoggerFactory;
 import com.ideamoment.ideadata.annotation.DataItemType;
 import com.ideamoment.ideadata.annotation.Entity;
 import com.ideamoment.ideadata.description.EntityDescription;
-import com.ideamoment.ideadata.description.EntityDescriptionFactory;
 import com.ideamoment.ideadata.description.IdDescription;
 import com.ideamoment.ideadata.description.PropertyDescription;
 import com.ideamoment.ideadata.description.TestGen;
 import com.ideamoment.ideajdbc.IdeaJdbc;
+import com.ideamoment.ideajdbc.description.JdbcEntityDescription;
+import com.ideamoment.ideajdbc.description.JdbcEntityDescriptionFactory;
 import com.ideamoment.ideajdbc.tool.mysql.MySqlToolMapper;
 
 /**
@@ -253,7 +251,7 @@ public class MySqlEntity2Ddl {
     	
     }
 	public void syncTable(String dbName, String catalog, String schemaPattern, Class entityClass, boolean dropWhenExist) {
-		EntityDescription entityDesc = EntityDescriptionFactory.getInstance().getEntityDescription(entityClass);
+		JdbcEntityDescription entityDesc = JdbcEntityDescriptionFactory.getInstance().getEntityDescription(entityClass);
 		Connection conn = IdeaJdbc.db(dbName).beginTransaction().getConnection();
 		
 		try {
