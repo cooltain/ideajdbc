@@ -404,13 +404,20 @@ public class ResultHandler<T> {
 	private SelectColumnInfo retriveEntityPropName(EntityDescription entityDescription,
 			SelectColumnInfo colInfo) {
 		String col = colInfo.getColumnName();
-		PropertyDescription propDesc = entityDescription.getPropertyDescription(col);
-		if(propDesc == null) {
-			propDesc = entityDescription.getPropertyDescriptionByDataItem(col.toUpperCase());
+		PropertyDescription idDesc=entityDescription.getIdDescription();//判断是不是主键
+		if(idDesc.getDataItem().equalsIgnoreCase(col))
+			colInfo.setPropName(idDesc.getName());
+		else{//不是的话就找propertyDescription
+			PropertyDescription propDesc = entityDescription.getPropertyDescription(col);
+			
+			if(propDesc == null) {
+				propDesc = entityDescription.getPropertyDescriptionByDataItem(col.toUpperCase());
+			}
+			if(propDesc != null) {
+				colInfo.setPropName(propDesc.getName());
+			}
 		}
-		if(propDesc != null) {
-			colInfo.setPropName(propDesc.getName());
-		}
+		
 		return colInfo;
 	}
 	

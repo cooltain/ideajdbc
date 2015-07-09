@@ -5,7 +5,6 @@
  */
 package com.ideamoment.ideajdbc;
 
-import com.ideamoment.ideadata.description.EntityDescriptionFactory;
 import com.ideamoment.ideadata.description.PropertyDescriptionDecoration;
 import com.ideamoment.ideajdbc.action.Command;
 import com.ideamoment.ideajdbc.action.Query;
@@ -13,6 +12,7 @@ import com.ideamoment.ideajdbc.action.UpdateAction;
 import com.ideamoment.ideajdbc.configuration.DbConfig;
 import com.ideamoment.ideajdbc.configuration.IdeaJdbcConfiguration;
 import com.ideamoment.ideajdbc.description.DataItemUpperDecoration;
+import com.ideamoment.ideajdbc.description.JdbcEntityDescriptionFactory;
 import com.ideamoment.ideajdbc.log.DriverLoggingProxy;
 import com.ideamoment.ideajdbc.server.Db;
 import com.ideamoment.ideajdbc.server.DbManager;
@@ -29,7 +29,7 @@ public class IdeaJdbc {
 	
 	static {
 		PropertyDescriptionDecoration dataItemUpper = new DataItemUpperDecoration();
-		EntityDescriptionFactory.getInstance().setupPropertyDecoration(dataItemUpper);
+		JdbcEntityDescriptionFactory.getInstance().setupPropertyDecoration(dataItemUpper);
 		if(!IdeaJdbcConfiguration.inited) {
 			IdeaJdbcConfiguration.initConfig("ideajdbc.properties");
 		}
