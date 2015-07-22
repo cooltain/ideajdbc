@@ -66,8 +66,8 @@ public class JdbcEntityDescriptionFactory extends EntityDescriptionFactory {
                         partitionDescription.setDataItem(result.getPropertyDescription(partitionProperty).getDataItem());
                     }
                 }else{
-                    partitionDescription.setDataItem(partitionDataItem);
-                    partitionDescription.setProperty(result.getPropertyDescriptionByDataItem(partitionDataItem).getName());
+                    partitionDescription.setDataItem(partitionDataItem.toUpperCase());
+                    partitionDescription.setProperty(result.getPropertyDescriptionByDataItem(partitionDataItem.toUpperCase()).getName());
                 }
                 result.setPartitionDescription(partitionDescription);
             }
