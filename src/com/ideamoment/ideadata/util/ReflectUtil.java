@@ -6,6 +6,7 @@
 package com.ideamoment.ideadata.util;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,4 +33,19 @@ public class ReflectUtil {
 		}
 		return allFields;
 	}
+	
+	/**
+	 * 将属性名转换为getter方法名
+	 * 
+	 * @param propName
+	 * @return
+	 */
+	public static String toGetterMethodName(String propName) {
+	    if(propName.charAt(0) <= 122 && propName.charAt(0) >= 97) {
+	        propName = (char)(propName.charAt(0) - 32) + propName.substring(1);
+	    }
+	    return "get" + propName;
+	}
+	
+	
 }

@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.ideamoment.ideadata.annotation.DataItemType;
+import com.ideamoment.ideadata.annotation.Entity;
 import com.ideamoment.ideadata.util.TypeUtil;
 import com.ideamoment.ideajdbc.actionparser.ActionParser;
 import com.ideamoment.ideajdbc.actionparser.JdbcSql;
@@ -102,7 +103,14 @@ public class SqlQueryAction<T> extends AbstractAction<T> implements Query<T> {
 		
 		ResultHandler handler = new ResultHandler();
 		if(this.entityClass != null) {
-			return handler.handleResultToEntity(rs, entityClass, this, false);
+		    List<T> result;
+            boolean isEntity = entityClass.isAnnotationPresent(Entity.class);
+            if(isEntity) {
+                result = handler.handleResultToEntity(rs, entityClass, this, false);
+            }else{
+                result = handler.handleResultToNonEntity(rs, entityClass, this, false);
+            }
+			return result;
 		}else{
 			return handler.handleResultToMap(rs);
 		}
@@ -123,7 +131,13 @@ public class SqlQueryAction<T> extends AbstractAction<T> implements Query<T> {
 		
 		ResultHandler handler = new ResultHandler();
 		if(this.entityClass != null) {
-			List<T> result = handler.handleResultToEntity(rs, entityClass, this, true);
+		    List<T> result;
+		    boolean isEntity = entityClass.isAnnotationPresent(Entity.class);
+		    if(isEntity) {
+		        result = handler.handleResultToEntity(rs, entityClass, this, true);
+		    }else{
+		        result = handler.handleResultToNonEntity(rs, entityClass, this, true);
+		    }
 			if(result != null && result.size() == 1) {
 				return result.get(0);
 			}else{
@@ -157,7 +171,16 @@ public class SqlQueryAction<T> extends AbstractAction<T> implements Query<T> {
 		ResultSet rs = executor.executeQuery(sql, transaction);
 		
 		ResultHandler handler = new ResultHandler();
-		return handler.handleResultToEntity(rs, entityClass, this, false);
+		
+		List<T> result;
+        boolean isEntity = entityClass.isAnnotationPresent(Entity.class);
+        if(isEntity) {
+            result = handler.handleResultToEntity(rs, entityClass, this, false);
+        }else{
+            result = handler.handleResultToNonEntity(rs, entityClass, this, false);
+        }
+		
+		return result;
 	}
 	
 	@Override
@@ -181,7 +204,14 @@ public class SqlQueryAction<T> extends AbstractAction<T> implements Query<T> {
 		
 		ResultHandler handler = new ResultHandler();
 		if(this.entityClass != null) {
-			return handler.handleResultToEntity(rs, entityClass, this, false);
+		    List<T> result;
+            boolean isEntity = entityClass.isAnnotationPresent(Entity.class);
+            if(isEntity) {
+                result = handler.handleResultToEntity(rs, entityClass, this, false);
+            }else{
+                result = handler.handleResultToNonEntity(rs, entityClass, this, false);
+            }
+			return result;
 		}else{
 			return handler.handleResultToMap(rs);
 		}

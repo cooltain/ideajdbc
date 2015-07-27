@@ -6,6 +6,7 @@
 package com.ideamoment.ideajdbc.resulthandler;
 
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
@@ -18,12 +19,15 @@ import java.util.Set;
 
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.ideamoment.ideadata.annotation.DataItemType;
 import com.ideamoment.ideadata.description.EntityDescription;
-import com.ideamoment.ideadata.description.EntityDescriptionFactory;
 import com.ideamoment.ideadata.description.PropertyDescription;
 import com.ideamoment.ideadata.description.RefDescription;
+import com.ideamoment.ideadata.util.ReflectUtil;
+import com.ideamoment.ideadata.util.TypeUtil;
 import com.ideamoment.ideajdbc.action.Query;
 import com.ideamoment.ideajdbc.description.JdbcEntityDescription;
 import com.ideamoment.ideajdbc.description.JdbcEntityDescriptionFactory;
@@ -36,6 +40,8 @@ import com.ideamoment.ideajdbc.util.DateUtil;
  *
  */
 public class ResultHandler<T> {
+    private static final Logger logger = LoggerFactory.getLogger(ResultHandler.class);
+    
 	/**
 	 * 将结果集转换为以Map为元素的列表
 	 * 
@@ -88,6 +94,56 @@ public class ResultHandler<T> {
 		}
 		
 		return result;
+	}
+	
+	public List handleResultToNonEntity(ResultSet rs, Class clazz, Query query, boolean isUnique) {
+	    try {
+            ResultSetMetaData rsMetaData = rs.getMetaData();
+            int columnCount = rsMetaData.getColumnCount();
+            
+            List result = new ArrayList();
+            
+            int rowIndex = 0;
+            while(rs.next()) {
+                if(isUnique && rowIndex > 0) {
+                    throw new IdeaJdbcException(IdeaJdbcExceptionCode.QUERY_ERR, "More than one row in Unique Query.");
+                }
+                
+                Object entity = clazz.newInstance();
+                
+                for(int i=1; i<=columnCount; i++) {
+                    String columnName = rsMetaData.getColumnLabel(i);
+                    String getterName = ReflectUtil.toGetterMethodName(columnName);
+                    try {
+                        Method getter = clazz.getMethod(getterName);
+                        Class returnType = getter.getReturnType();
+                        DataItemType dataItemType = TypeUtil.javaTypeToDataItemType(returnType);
+                        Object val = retriveResultSetValue(rs, columnName, dataItemType);
+                        PropertyUtils.setProperty(entity, columnName, val);
+                    }catch(NoSuchMethodException se) {
+                        logger.info("No setter method [{}] of [{}]", getterName, clazz.getName());
+                    }
+                }
+                
+                result.add(entity);
+                
+                rowIndex++;
+            }
+            
+            return result;
+	    }catch(SQLException e) {
+	        e.printStackTrace();
+            throw new IdeaJdbcException(e.getMessage());
+	    } catch (InstantiationException e) {
+            e.printStackTrace();
+            throw new IdeaJdbcException(e.getMessage());
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+            throw new IdeaJdbcException(e.getMessage());
+        } catch (InvocationTargetException e) {
+            e.printStackTrace();
+            throw new IdeaJdbcException(e.getMessage());
+        }
 	}
 	
 	public List handleResultToEntity(ResultSet rs, Class entityClass, Query query, boolean isUnique) {
@@ -337,7 +393,7 @@ public class ResultHandler<T> {
 		}
 		return mapperEntity;
 	}
-
+	
 	/**
 	 * @param entityCache
 	 * @param entityClass
@@ -360,6 +416,30 @@ public class ResultHandler<T> {
 			entityCache.put(entityClass, new HashMap<Object, Object>());
 		}
 		entityCache.get(entityClass).put(id, entity);
+	}
+	
+	private SelectColumnInfo parseColumnInfo(String fullAliasName, Query query) {
+	    int dollarPos = fullAliasName.indexOf("$");
+        SelectColumnInfo colInfo = new SelectColumnInfo();
+        if(dollarPos < 0) {
+            colInfo.setColumnName(fullAliasName);
+            colInfo.setFullAliasName(fullAliasName);
+            colInfo.setPropName(fullAliasName);
+        }else if(dollarPos == 0) {
+            colInfo.setColumnName(fullAliasName.substring(1));
+            colInfo.setFullAliasName(fullAliasName);
+            colInfo.setPropName(fullAliasName.substring(1));
+        }else{
+            String[] arr = fullAliasName.split("\\$");
+            colInfo.setColumnName(arr[1]);
+            colInfo.setFullAliasName(fullAliasName);
+            colInfo.setPropName(arr[1]);
+            if(!arr[0].equals(query.getEntityAlias())) {
+                colInfo.setTableName(arr[0]);
+            }
+        }
+        
+        return colInfo;
 	}
 	
 	private SelectColumnInfo parseColumnInfo(String fullAliasName, EntityDescription entityDescription, Query query) {
@@ -584,6 +664,37 @@ public class ResultHandler<T> {
 		}
 	}
 	
+	private class NonEntityRowMappingInfo {
+        private MapperNonEntity mainEntity;
+        private Map<String, MapperNonEntity> refEntities = new HashMap<String, MapperNonEntity>();
+        /**
+         * @return the mainEntity
+         */
+        public MapperNonEntity getMainEntity() {
+            return mainEntity;
+        }
+        /**
+         * @param mainEntity the mainEntity to set
+         */
+        public void setMainEntity(MapperNonEntity mainEntity) {
+            this.mainEntity = mainEntity;
+        }
+        /**
+         * @return the refEntities
+         */
+        public Map<String, MapperNonEntity> getRefEntities() {
+            return refEntities;
+        }
+        
+        public MapperNonEntity getRefEntity(String tableAlias) {
+            return this.refEntities.get(tableAlias);
+        }
+        
+        public void addRefEntity(String tableAlias, MapperNonEntity mapperEntity) {
+            this.refEntities.put(tableAlias, mapperEntity);
+        }
+    }
+	
 	private class MapperEntity {
 		private String idCol;
 		private EntityDescription entityDescription;
@@ -629,4 +740,35 @@ public class ResultHandler<T> {
 			this.colInfoes.add(colInfo);
 		}
 	}
+	
+	private class MapperNonEntity {
+        private Class clazz;
+        //列信息，不包括主键列
+        private List<SelectColumnInfo> colInfoes = new ArrayList<SelectColumnInfo>();
+
+        /**
+         * @return the entityDescription
+         */
+        public Class getClazz() {
+            return clazz;
+        }
+
+        /**
+         * @param entityDescription the entityDescription to set
+         */
+        public void setClazz(Class clazz) {
+            this.clazz = clazz;
+        }
+
+        /**
+         * @return the colInfoes
+         */
+        public List<SelectColumnInfo> getColInfoes() {
+            return colInfoes;
+        }
+        
+        public void addColumnInfo(SelectColumnInfo colInfo) {
+            this.colInfoes.add(colInfo);
+        }
+    }
 }

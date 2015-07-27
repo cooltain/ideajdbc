@@ -18,6 +18,7 @@ import org.junit.Test;
 
 import com.ideamoment.ideadata.annotation.DataItemType;
 import com.ideamoment.ideadata.description.Order;
+import com.ideamoment.ideadata.description.TempUser;
 import com.ideamoment.ideadata.description.User;
 import com.ideamoment.ideajdbc.action.Page;
 import com.ideamoment.ideajdbc.bean.BeanForUpdate;
@@ -157,6 +158,17 @@ public class TestIdeaJdbc {
 		
 		IdeaJdbc.endTransaction();
 	}
+	
+	@Test
+    public void testListToTempObject() {
+        IdeaJdbc.beginTransaction();
+        
+        List<TempUser> result = IdeaJdbc.query("SELECT C_ID id, NAME name FROM T_USER").listTo(TempUser.class);
+        assertEquals(2, result.size());
+        assertEquals("Chinakite", result.get(0).getName());
+        
+        IdeaJdbc.endTransaction();
+    }
 
 	@Test
 	public void testQueryWithParameter() {

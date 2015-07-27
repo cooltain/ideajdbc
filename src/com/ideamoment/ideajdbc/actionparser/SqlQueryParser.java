@@ -6,6 +6,7 @@
  */
 package com.ideamoment.ideajdbc.actionparser;
 
+import com.ideamoment.ideadata.annotation.Entity;
 import com.ideamoment.ideajdbc.action.Action;
 import com.ideamoment.ideajdbc.action.SqlQueryAction;
 import com.ideamoment.ideajdbc.description.JdbcEntityDescription;
@@ -33,7 +34,9 @@ public class SqlQueryParser extends AbstractActionParser implements ActionParser
 		String queryName = sqlQuery.getQueryName();
 		String sql = null;
 		
-		if(entityClass == null) {
+		boolean isEntity = entityClass.isAnnotationPresent(Entity.class);
+		
+		if(entityClass == null || !isEntity) {
 			sql = sqlQuery.getSql();
 		}else{
 			JdbcEntityDescription entityDescription = JdbcEntityDescriptionFactory.getInstance().getEntityDescription(entityClass);
