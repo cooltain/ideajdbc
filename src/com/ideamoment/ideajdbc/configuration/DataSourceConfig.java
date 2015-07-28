@@ -30,7 +30,9 @@ public class DataSourceConfig {
 	
 	String heartbeatSql;
 	
-	int maxConnectionLifetime = 1440000;
+	int heartbeatSleepTime = 5000;
+	
+    int maxConnectionLifetime = 1440000;
 	
 	int maxActiveTime = 300;
 
@@ -179,6 +181,20 @@ public class DataSourceConfig {
 	}
 
 	/**
+     * @return the heartbeatSleepTime
+     */
+    public int getHeartbeatSleepTime() {
+        return heartbeatSleepTime;
+    }
+
+    /**
+     * @param heartbeatSleepTime the heartbeatSleepTime to set
+     */
+    public void setHeartbeatSleepTime(int heartbeatSleepTime) {
+        this.heartbeatSleepTime = heartbeatSleepTime;
+    }
+	
+	/**
 	 * Load the settings from ebean.properties.
 	 */
 	public void loadSettings(String dbName){
@@ -218,6 +234,7 @@ public class DataSourceConfig {
 		maxConnections = IdeaDataConfiguration.getInt(prefix+"maxConnections", 15);
 		
 		
-		heartbeatSql = IdeaDataConfiguration.get(prefix+"heartbeatSql", null);
+		heartbeatSql = IdeaDataConfiguration.get(prefix + "heartbeatSql", null);
+		heartbeatSleepTime = IdeaDataConfiguration.getInt(prefix + "heartbeatSleepTime", 5000);
 	}
 }

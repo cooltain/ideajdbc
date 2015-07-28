@@ -45,6 +45,7 @@ public class ProxoolConnectionPool implements ConnectionPool {
 		info.setProperty("proxool.maximum-connection-count", String.valueOf(config.getMaxConnections()));
 		info.setProperty("proxool.minimum-connection-count", String.valueOf(config.getMinConnections()));
 		info.setProperty("proxool.house-keeping-test-sql", config.getHeartbeatSql());
+		info.setProperty("proxool.house-keeping-sleep-time", String.valueOf(config.getHeartbeatSleepTime()));
 		info.setProperty("proxool.simultaneous-build-throttle", String.valueOf(config.getMaxConnections()));
 		info.setProperty("proxool.maximum-active-time", String.valueOf(config.getMaxActiveTime()));
 		info.setProperty("proxool.maximum-connection-lifetime", String.valueOf(config.getMaxConnectionLifetime()));

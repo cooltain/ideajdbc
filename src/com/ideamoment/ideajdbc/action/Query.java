@@ -140,6 +140,14 @@ public interface Query<T> extends Action<T> {
 	public T uniqueTo(Class<T> entityClass);
 	
 	/**
+     * 根据当前查询返回单条结果。
+     * 
+     * @param entityClass 实体类
+     * @return 查询结果（单条）
+     */
+    public T uniqueTo(Class<T> entityClass, boolean ignoreAnnotation);
+	
+	/**
 	 * 将返回结果的别名为tableAlias表的字段映射到propName属性中去
 	 * 
 	 * @param propName 属性名

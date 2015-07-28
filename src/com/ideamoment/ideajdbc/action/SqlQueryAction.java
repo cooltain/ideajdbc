@@ -117,7 +117,12 @@ public class SqlQueryAction<T> extends AbstractAction<T> implements Query<T> {
 	}
 
 	@Override
-	public T uniqueTo(Class<T> entityClass) {
+    public T uniqueTo(Class<T> entityClass) {
+	    return uniqueTo(entityClass, false);
+	}
+	
+	@Override
+	public T uniqueTo(Class<T> entityClass, boolean ignoreAnnotation) {
 		this.entityClass = entityClass;
 		
 		checkTransaction(transaction);
@@ -133,7 +138,7 @@ public class SqlQueryAction<T> extends AbstractAction<T> implements Query<T> {
 		if(this.entityClass != null) {
 		    List<T> result;
 		    boolean isEntity = entityClass.isAnnotationPresent(Entity.class);
-		    if(isEntity) {
+		    if(isEntity && !ignoreAnnotation) {
 		        result = handler.handleResultToEntity(rs, entityClass, this, true);
 		    }else{
 		        result = handler.handleResultToNonEntity(rs, entityClass, this, true);
@@ -428,7 +433,13 @@ public class SqlQueryAction<T> extends AbstractAction<T> implements Query<T> {
 		ResultHandler handler = new ResultHandler();
 		long count = (Long)handler.handleResultToUniqueValue(countRs);
 		
-		List datas = handler.handleResultToEntity(rs, entityClass, this, false);
+		List<T> datas;
+        boolean isEntity = entityClass.isAnnotationPresent(Entity.class);
+        if(isEntity && !ignoreAnnotation) {
+            datas = handler.handleResultToEntity(rs, entityClass, this, false);
+        }else{
+            datas = handler.handleResultToNonEntity(rs, entityClass, this, false);
+        }
 		
 		Page page = new Page();
 		page.setCurrentPage(currentPage);
