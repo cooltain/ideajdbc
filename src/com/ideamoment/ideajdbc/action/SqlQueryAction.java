@@ -150,38 +150,48 @@ public class SqlQueryAction<T> extends AbstractAction<T> implements Query<T> {
 	
 	@Override
 	public List<T> listTo(Class<T> entityClass) {
-		return listTo(entityClass, null);
+		return listTo(entityClass, null, false);
 	}
+	
+	@Override
+    public List<T> listTo(Class<T> entityClass, boolean ignoreAnnotation) {
+        return listTo(entityClass, null, ignoreAnnotation);
+    }
 
 	@Override
 	public List<T> listTo(Class<T> entityClass, String entityAlias) {
-		if(entityAlias != null) {
-			this.entityAlias = entityAlias;
-		}
-		this.entityClass = entityClass;
-		
-		checkTransaction(transaction);
-		
-		//使用ActionParser解析
-		ActionParser parser = new SqlQueryParser();
-		JdbcSql sql = parser.parse(this);
-		
-		//执行Sql并返回结果
-		SqlExecutor executor = new SqlExecutor();
-		ResultSet rs = executor.executeQuery(sql, transaction);
-		
-		ResultHandler handler = new ResultHandler();
-		
-		List<T> result;
+		return this.listTo(entityClass, entityAlias, false);
+	}
+	
+	@Override
+    public List<T> listTo(Class<T> entityClass, String entityAlias, boolean ignoreAnnotation) {
+        if(entityAlias != null) {
+            this.entityAlias = entityAlias;
+        }
+        this.entityClass = entityClass;
+        
+        checkTransaction(transaction);
+        
+        //使用ActionParser解析
+        ActionParser parser = new SqlQueryParser();
+        JdbcSql sql = parser.parse(this);
+        
+        //执行Sql并返回结果
+        SqlExecutor executor = new SqlExecutor();
+        ResultSet rs = executor.executeQuery(sql, transaction);
+        
+        ResultHandler handler = new ResultHandler();
+        
+        List<T> result;
         boolean isEntity = entityClass.isAnnotationPresent(Entity.class);
-        if(isEntity) {
+        if(isEntity && !ignoreAnnotation) {
             result = handler.handleResultToEntity(rs, entityClass, this, false);
         }else{
             result = handler.handleResultToNonEntity(rs, entityClass, this, false);
         }
-		
-		return result;
-	}
+        
+        return result;
+    }
 	
 	@Override
 	public List<T> rangeList(int start, int end) {
@@ -373,11 +383,21 @@ public class SqlQueryAction<T> extends AbstractAction<T> implements Query<T> {
 
 	@Override
 	public Page<T> pageTo(Class<T> entityClass, int currentPage, int pageSize) {
-		return pageTo(entityClass, null, currentPage, pageSize);
+		return pageTo(entityClass, null, currentPage, pageSize, false);
 	}
 	
 	@Override
-	public Page<T> pageTo(Class<T> entityClass, String entityAlias, int currentPage, int pageSize) {
+    public Page<T> pageTo(Class<T> entityClass, int currentPage, int pageSize, boolean ignoreAnnotation) {
+        return pageTo(entityClass, null, currentPage, pageSize, ignoreAnnotation);
+    }
+	
+	@Override
+    public Page<T> pageTo(Class<T> entityClass, String entityAlias, int currentPage, int pageSize) {
+	    return pageTo(entityClass, entityAlias, currentPage, pageSize, false);
+	}
+	
+	@Override
+	public Page<T> pageTo(Class<T> entityClass, String entityAlias, int currentPage, int pageSize, boolean ignoreAnnotation) {
 		if(entityAlias != null) {
 			this.entityAlias = entityAlias;
 		}
@@ -504,5 +524,4 @@ public class SqlQueryAction<T> extends AbstractAction<T> implements Query<T> {
     public void setPartitionValue(Object partitionValue) {
         this.partitionValue = partitionValue;
     }
-
 }

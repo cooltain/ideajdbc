@@ -49,6 +49,15 @@ public interface Query<T> extends Action<T> {
 	public List<T> listTo(Class<T> entityClass);
 	
 	/**
+     * 将查询出来的结果转换为entityClass类返回
+     * 
+     * @param entityClass 实体类
+     * @param ignoreAnnotation 是否忽略注解作用, 默认为false
+     * @return 结果列表
+     */
+    public List<T> listTo(Class<T> entityClass, boolean ignoreAnnotation);
+	
+	/**
 	 * <p>返回分页查询结果</p>
 	 * <b>注意：</b>这个方法适合于查询小表的分页，对于大数据量的查询需要自行优化sql语句，封装相应的方法来实现。
 	 * 
@@ -58,6 +67,18 @@ public interface Query<T> extends Action<T> {
 	 * @return
 	 */
 	public Page<T> pageTo(Class<T> entityClass, int currentPage, int pageSize);
+	
+	/**
+     * <p>返回分页查询结果</p>
+     * <b>注意：</b>这个方法适合于查询小表的分页，对于大数据量的查询需要自行优化sql语句，封装相应的方法来实现。
+     * 
+     * @param entityClass
+     * @param currentPage
+     * @param pageSize
+     * @param ignoreAnnotation 是否忽略注解作用, 默认为false
+     * @return
+     */
+    public Page<T> pageTo(Class<T> entityClass, int currentPage, int pageSize, boolean ignoreAnnotation);
 	
 	/**
 	 * <p>返回分页查询结果</p>
@@ -72,6 +93,19 @@ public interface Query<T> extends Action<T> {
 	public Page<T> pageTo(Class<T> entityClass, String entityAlias, int currentPage, int pageSize);
 	
 	/**
+     * <p>返回分页查询结果</p>
+     * <b>注意：</b>这个方法适合于查询小表的分页，对于大数据量的查询需要自行优化sql语句，封装相应的方法来实现。
+     * 
+     * @param entityClass
+     * @param entityAlias
+     * @param currentPage
+     * @param pageSize
+     * @param ignoreAnnotation 是否忽略注解作用, 默认为false
+     * @return
+     */
+    public Page<T> pageTo(Class<T> entityClass, String entityAlias, int currentPage, int pageSize, boolean ignoreAnnotation);
+	
+	/**
 	 * 将查询出来的结果转换为entityClass类返回
 	 * 
 	 * @param entityClass 实体类
@@ -79,6 +113,16 @@ public interface Query<T> extends Action<T> {
 	 * @return 结果列表
 	 */ 
 	public List<T> listTo(Class<T> entityClass, String entityAlias);
+	
+	/**
+     * 将查询出来的结果转换为entityClass类返回
+     * 
+     * @param entityClass 实体类
+     * @param entityAlias 主实体类的别名
+     * @param ignoreAnnotation 是否忽略注解作用, 默认为false
+     * @return 结果列表
+     */ 
+    public List<T> listTo(Class<T> entityClass, String entityAlias, boolean ignoreAnnotation);
 	
 	/**
 	 * 根据当前查询返回单条结果。
