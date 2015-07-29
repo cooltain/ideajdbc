@@ -528,7 +528,7 @@ public class ResultHandler<T> {
 				result = rs.getFloat(aliasName);
 				break;
 			case DOUBLE:
-				result = rs.getFloat(aliasName);
+				result = rs.getDouble(aliasName);
 				break;
 			case DECIMAL:
 				result = rs.getBigDecimal(aliasName);

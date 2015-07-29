@@ -34,32 +34,35 @@ public class SqlQueryParser extends AbstractActionParser implements ActionParser
 		String queryName = sqlQuery.getQueryName();
 		String sql = null;
 		
-		boolean isEntity = entityClass.isAnnotationPresent(Entity.class);
-		
-		if(entityClass == null || !isEntity) {
+		if(entityClass == null) {
 			sql = sqlQuery.getSql();
 		}else{
-			JdbcEntityDescription entityDescription = JdbcEntityDescriptionFactory.getInstance().getEntityDescription(entityClass);
-			
-			if(queryName != null) {
-				sql = entityDescription.getSqlQuery(queryName);
-				if(sql == null){
-					throw new IdeaJdbcException(IdeaJdbcExceptionCode.NAMEDSQL_NOTFOUND, "Named Query [" + queryName + "] is not defined in entity [" + entityClass.getName() + "].");
-				}
-			}else{
-				sql = sqlQuery.getSql();
-				if(sql == null) {
-					sql = "select " + entityDescription.allDataItemString() + " from " + entityDescription.getDataSet();
-				}
-			}
-			
-			//如果是分区查询
-			if(sqlQuery.isPartitionQuery()) {
-	            PartitionDescription partDesc = entityDescription.getPartitionDescription();
-	            String partCol = partDesc.getDataItem();
-	            sql = sql + " where " + partCol + " = :" + partDesc.getProperty();
-	            sqlQuery.getParameters().put(partDesc.getProperty(), sqlQuery.getPartitionValue());
-	        }
+		    boolean isEntity = entityClass.isAnnotationPresent(Entity.class);
+		    if(!isEntity) {
+		        sql = sqlQuery.getSql();
+		    }else{
+		        JdbcEntityDescription entityDescription = JdbcEntityDescriptionFactory.getInstance().getEntityDescription(entityClass);
+	            
+	            if(queryName != null) {
+	                sql = entityDescription.getSqlQuery(queryName);
+	                if(sql == null){
+	                    throw new IdeaJdbcException(IdeaJdbcExceptionCode.NAMEDSQL_NOTFOUND, "Named Query [" + queryName + "] is not defined in entity [" + entityClass.getName() + "].");
+	                }
+	            }else{
+	                sql = sqlQuery.getSql();
+	                if(sql == null) {
+	                    sql = "select " + entityDescription.allDataItemString() + " from " + entityDescription.getDataSet();
+	                }
+	            }
+	            
+	            //如果是分区查询
+	            if(sqlQuery.isPartitionQuery()) {
+	                PartitionDescription partDesc = entityDescription.getPartitionDescription();
+	                String partCol = partDesc.getDataItem();
+	                sql = sql + " where " + partCol + " = :" + partDesc.getProperty();
+	                sqlQuery.getParameters().put(partDesc.getProperty(), sqlQuery.getPartitionValue());
+	            }
+		    }
 		}
 		
 		return buildJdbcSql(sql, sqlQuery.getParameters());
