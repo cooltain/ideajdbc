@@ -175,6 +175,15 @@ public class IdeaJdbc {
 	}
 	
 	/**
+	 * 获取当前使用的事务;
+	 * 
+	 * @return 事务实例
+	 */
+	public static Transaction getCurrentTransaction() {
+	    return defaultDb().getCurrentTransaction();
+	}
+	
+	/**
 	 * 提交事务
 	 */
 	public static void commitTransaction() {
