@@ -6,6 +6,7 @@
 package com.ideamoment.ideajdbc.executor;
 
 import java.math.BigDecimal;
+import java.sql.Blob;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -156,6 +157,7 @@ public class SqlExecutor {
 						}
 						break;
 					case BLOB:
+					    pstmt.setBlob(i, (Blob)paramValue);
 					case BYTE:
 						break;
 					default:

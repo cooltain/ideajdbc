@@ -60,6 +60,8 @@ public class TypeUtil {
 				return DataItemType.TIME;
 			}else if(clazz.equals(java.sql.Timestamp.class)) {
 				return DataItemType.TIMESTAMP;
+			}else if(clazz.equals(java.sql.Blob.class)) {
+			    return DataItemType.BLOB;
 			}
 		}
 		

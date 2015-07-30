@@ -556,6 +556,8 @@ public class ResultHandler<T> {
 				}
 				break;
 			case BLOB:
+			    result = rs.getBlob(aliasName);
+			    break;
 			case BYTE:
 				break;
 			default:
