@@ -514,27 +514,45 @@ public class ResultHandler<T> {
 				break;
 			case SMALLINT:
 			case SHORT:
-				result = rs.getShort(aliasName);
+			    result = rs.getObject(aliasName);
+                if(result != null) {
+                    result = rs.getShort(aliasName);
+                }
 				break;
 			case INT:
 			case INTEGER:
-				result = rs.getInt(aliasName);
+			    result = rs.getObject(aliasName);
+                if(result != null) {
+				    result = rs.getInt(aliasName);
+				}
 				break;
 			case LONG:
 			case BIGINT:
-				result = rs.getLong(aliasName);
-				break;
+			    result = rs.getObject(aliasName);
+                if(result != null) {
+                    result = rs.getLong(aliasName);
+                }
+                break;
 			case FLOAT:
-				result = rs.getFloat(aliasName);
+			    result = rs.getObject(aliasName);
+                if(result != null) {
+                    result = rs.getFloat(aliasName);
+                }
 				break;
 			case DOUBLE:
-				result = rs.getDouble(aliasName);
+			    result = rs.getObject(aliasName);
+                if(result != null) {
+                    result = rs.getDouble(aliasName);
+                }
 				break;
 			case DECIMAL:
 				result = rs.getBigDecimal(aliasName);
 				break;
 			case BOOLEAN:
-				result = rs.getBoolean(aliasName);
+			    result = rs.getObject(aliasName);
+                if(result != null) {
+                    result = rs.getBoolean(aliasName);
+                }
 				break;
 			case DATE:
 				java.sql.Date sqlDate = rs.getDate(aliasName);
