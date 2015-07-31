@@ -1,2 +1,2 @@
 # ideajdbc
-IdeaJDBC是由IDEAMOMENT团队开发的用于方便JDBC操作关系型数据库的框架。我们不喜欢Hibernate，它有些重；也不喜欢MyBatis，它做的有些少。我们想找一个折中的方案，尝试过EBean、JFinal、Nutz，但最终还是诞生了IdeaJdbc。不是这些框架不好，而是IdeaJdbc更适合我们的思路和想法。
+IdeaJDBC是由IDEAMOMENT团队开发的用于方便JDBC操作关系型数据库的框架。我们不喜欢Hibernate，它有些重；也不喜欢MyBatis，它做的有些少。我们想找一个折中的方案，尝试过EBean、JFinal、Nutz，但最终还是诞生了IdeaJDBC。不是这些框架不好，而是IdeaJDBC更适合我们的思路和想法。
