@@ -8,6 +8,7 @@ package com.ideamoment.ideajdbc.actionparser;
 
 import com.ideamoment.ideadata.annotation.Entity;
 import com.ideamoment.ideajdbc.action.Action;
+import com.ideamoment.ideajdbc.action.Parameter;
 import com.ideamoment.ideajdbc.action.SqlQueryAction;
 import com.ideamoment.ideajdbc.description.JdbcEntityDescription;
 import com.ideamoment.ideajdbc.description.JdbcEntityDescriptionFactory;
@@ -60,7 +61,7 @@ public class SqlQueryParser extends AbstractActionParser implements ActionParser
 	                PartitionDescription partDesc = entityDescription.getPartitionDescription();
 	                String partCol = partDesc.getDataItem();
 	                sql = sql + " where " + partCol + " = :" + partDesc.getProperty();
-	                sqlQuery.getParameters().put(partDesc.getProperty(), sqlQuery.getPartitionValue());
+	                sqlQuery.getParameters().put(partDesc.getProperty(), new Parameter(partDesc.getProperty(), sqlQuery.getPartitionValue()));
 	            }
 		    }
 		}
