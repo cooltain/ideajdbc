@@ -18,5 +18,6 @@ public enum DataItemType {
 	BLOB,BINARY,BYTE,
 	ARRAY,
 	BOOLEAN,
+	NULL,
 	UNKNOWN
 }

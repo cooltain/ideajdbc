@@ -100,7 +100,13 @@ public class AbstractActionParser {
 		List<JdbcSqlParam> sqlParams = new ArrayList<JdbcSqlParam>(params.length);
 		int i = 0;
 		for(Parameter p : params) {
-			if(p.getValue() instanceof List) {		//处理List参数
+		    if(p.getValue() == null) {
+		        JdbcSqlParam jdbcSqlParam = new JdbcSqlParam();
+                jdbcSqlParam.setType(getParamType(p));
+                jdbcSqlParam.setParamValue(p.getValue());
+                sqlParams.add(jdbcSqlParam);
+                i++;
+		    }else if(p.getValue() instanceof List) {		//处理List参数
 				List tempParams = (List)p.getValue();
 				StringBuffer conbuffer = new StringBuffer();
 				for(int m=0; m<tempParams.size(); m++) {
