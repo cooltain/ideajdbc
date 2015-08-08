@@ -29,7 +29,7 @@ public class LobUtil {
      * @throws SQLException
      * @throws IOException
      */
-    public Blob createBlob(byte[] bytes) throws SQLException, IOException {
+    public static Blob createBlob(byte[] bytes) throws SQLException, IOException {
         return createBlob(bytes, null);
     }
     
@@ -42,7 +42,7 @@ public class LobUtil {
      * @throws SQLException
      * @throws IOException
      */
-    public Blob createBlob(byte[] bytes, String dbName) throws SQLException, IOException {
+    public static Blob createBlob(byte[] bytes, String dbName) throws SQLException, IOException {
         Connection conn = null;
         if(dbName == null) {
             conn = IdeaJdbc.getCurrentTransaction().getConnection();
