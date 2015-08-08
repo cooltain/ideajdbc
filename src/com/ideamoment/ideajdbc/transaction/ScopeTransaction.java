@@ -190,7 +190,11 @@ public class ScopeTransaction implements Transaction{
 	public void end() {
 		if(isActive()) {
 			this.transaction.end();
-			TransactionThreadLocal.replace(dbName, this.suspendedTransaction);
+			if(suspendedTransaction != null) {
+                ScopeTransactionThreadLocal.set(this.dbName, this.suspendedTransaction);
+            }else{
+                ScopeTransactionThreadLocal.set(this.dbName, null);
+            }
 		}
 	}
 

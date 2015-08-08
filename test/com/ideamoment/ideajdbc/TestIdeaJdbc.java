@@ -96,6 +96,11 @@ public class TestIdeaJdbc {
 		} catch (SQLException e) {
 			assertEquals(true, true);
 		}
+		
+		Transaction tx1 = IdeaJdbc.beginTransaction();
+		
+		
+		IdeaJdbc.endTransaction();
 	}
 	
 	@Test
