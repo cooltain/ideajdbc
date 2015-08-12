@@ -126,7 +126,7 @@ public class SqlExecutor {
 						pstmt.setFloat(i, (Float)paramValue);
 						break;
 					case DOUBLE:
-						pstmt.setDouble(i, (Float)paramValue);
+						pstmt.setDouble(i, (Double)paramValue);
 						break;
 					case DECIMAL:
 						pstmt.setBigDecimal(i, (BigDecimal)paramValue);
