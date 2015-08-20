@@ -50,7 +50,7 @@ public class LobUtil {
             conn = IdeaJdbc.db(dbName).getCurrentTransaction().getConnection();
         }
         Blob blob = conn.createBlob();
-        OutputStream out = blob.setBinaryStream(0);
+        OutputStream out = blob.setBinaryStream(1);
         InputStream ins = new ByteArrayInputStream(bytes);
         byte[] temp = new byte[4096];  
         int length;  
