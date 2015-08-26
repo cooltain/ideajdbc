@@ -57,6 +57,15 @@ public class LobUtil {
         while ((length = ins.read(temp)) != -1) {  
             out.write(temp, 0, length);  
         }
+        out.close();
         return blob;
+    }
+    
+    public static void main(String[] args) throws SQLException, IOException {
+        IdeaJdbc.beginTransaction();
+        String str = "AAABBBCCCDDD";
+        Blob b = createBlob(str.getBytes());
+        System.out.println("aa");
+        IdeaJdbc.endTransaction();
     }
 }
