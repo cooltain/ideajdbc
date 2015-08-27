@@ -54,7 +54,9 @@ public class ScopeTransactionManager {
 		if(map != null) {
 			for(String dbName : map.keySet()) {
 				ScopeTransaction scopeTx = ScopeTransactionThreadLocal.get(dbName);
-				scopeTx.onError(e);
+				if(scopeTx != null) {
+				    scopeTx.onError(e);
+				}
 			}
 		}
 	}
