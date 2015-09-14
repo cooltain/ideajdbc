@@ -62,9 +62,15 @@ public class SqlCommand implements Command {
 
 	@Override
 	public Command setParameter(int index, Object value) {
-		DataItemType type = TypeUtil.javaTypeToDataItemType(value.getClass());
-		Parameter param = new Parameter(index, value, type);
-		this.parameters.put(index, param);
+	    if(value == null) {
+	        Parameter param = new Parameter(index, value, DataItemType.NULL);
+            this.parameters.put(index, param);
+	    }else{
+	        DataItemType type = TypeUtil.javaTypeToDataItemType(value.getClass());
+	        Parameter param = new Parameter(index, value, type);
+	        this.parameters.put(index, param);
+	    }
+		
 		return this;
 	}
 	

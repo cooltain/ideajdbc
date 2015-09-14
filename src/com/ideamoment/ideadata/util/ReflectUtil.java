@@ -6,9 +6,10 @@
 package com.ideamoment.ideadata.util;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * @author Chinakite
@@ -23,11 +24,16 @@ public class ReflectUtil {
 	 */
 	public static List<Field> getAllFieldsList(Class<?> cls) {
 		final List<Field> allFields = new ArrayList<Field>();
+		final Set<String> fieldNames = new HashSet<String>();
 		Class<?> currentClass = cls;
 		while (currentClass != null) {
 			final Field[] declaredFields = currentClass.getDeclaredFields();
 			for (Field field : declaredFields) {
+			    if(fieldNames.contains(field.getName())) {
+			       continue; 
+			    }
 				allFields.add(field);
+				fieldNames.add(field.getName());
 			}
 			currentClass = currentClass.getSuperclass();
 		}

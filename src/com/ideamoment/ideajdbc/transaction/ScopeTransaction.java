@@ -103,8 +103,10 @@ public class ScopeTransaction implements Transaction{
 				this.transaction.end();
 				if(suspendedTransaction != null) {
 					ScopeTransactionThreadLocal.set(this.dbName, this.suspendedTransaction);
+					logger.debug("[" + this.dbName + "] Thread transaction setup suspendedTransaction.");
 				}else{
 				    ScopeTransactionThreadLocal.set(this.dbName, null);
+				    logger.debug("[" + this.dbName + "] Thread transaction set null.");
 				}
 				logger.debug("Transaction end on final.");
 			}
@@ -116,7 +118,9 @@ public class ScopeTransaction implements Transaction{
 		if(txType == TxType.REQUIRED || txType == TxType.REQUIRES_NEW) {
 			if(!this.nested && this.refCount == 0) {
 				this.transaction.commit();
-				logger.debug("Transaction commit on success.");
+				logger.debug("Transaction[" + this.dbName + "] commit on success.");
+			}else{
+			    logger.debug("Transaction[" + this.dbName + "] not commit on success since nested=[" + this.nested + "], refCount=["+ this.refCount + "].");
 			}
 		}
 	}

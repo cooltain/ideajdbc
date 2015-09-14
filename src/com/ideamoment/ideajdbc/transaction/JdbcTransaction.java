@@ -93,9 +93,11 @@ public class JdbcTransaction implements Transaction {
 			throw new IllegalStateException(illegalStateMessage);
 		}
 		try {
-			int connHashCode = connection.hashCode();
-			connection.rollback();
-			logger.debug("Connection [{}] rollback.", connHashCode);
+//			if(!connection.isClosed()) {
+			    int connHashCode = connection.hashCode();
+			    connection.rollback();
+			    logger.debug("Connection [{}] rollback.", connHashCode);
+//			}
 		} catch (SQLException e) {
 			throw new IdeaJdbcException(IdeaJdbcExceptionCode.TX_ROLLBACK_ERR, "Transaction rollback error.", e);
 		}
@@ -138,7 +140,9 @@ public class JdbcTransaction implements Transaction {
 	 */
 	protected void deactivate() {
 		try {
-			connection.close();
+		    if(!connection.isClosed()) {
+		        connection.close();
+		    }
 		} catch (SQLException e) {
 			throw new IdeaJdbcException(IdeaJdbcExceptionCode.TX_CLOSE_ERR, "Transaction close error.", e);
 		}

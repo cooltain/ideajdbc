@@ -7,12 +7,19 @@ package com.ideamoment.ideajdbc.transaction;
 
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.ideamoment.ideajdbc.spring.IdeaJdbcTransactionAspect;
+
 /**
  * @author Chinakite
  *
  */
 public class ScopeTransactionManager {
 	
+    private static final Logger logger = LoggerFactory.getLogger(ScopeTransactionManager.class);
+    
 	public static void increaseRefCount() {
 		Map<String, ScopeTransaction> existsTxMap = ScopeTransactionThreadLocal.allTransactions();
 		if(existsTxMap != null) {
@@ -20,6 +27,7 @@ public class ScopeTransactionManager {
 				ScopeTransaction scopeTx = ScopeTransactionThreadLocal.get(dbName);
 				if(scopeTx != null) {
 					scopeTx.increaseCount();
+					logger.debug("Increase [" + dbName + "] RefCount to " + scopeTx.getRefCount());
 				}
 			}
 		}
@@ -32,6 +40,7 @@ public class ScopeTransactionManager {
 				ScopeTransaction scopeTx = ScopeTransactionThreadLocal.get(dbName);
 				if(scopeTx != null) {
 					scopeTx.reduceCount();
+					logger.debug("Reduce [" + dbName + "] RefCount to " + scopeTx.getRefCount());
 				}
 			}
 		}

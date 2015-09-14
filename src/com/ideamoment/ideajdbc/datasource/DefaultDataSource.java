@@ -46,7 +46,7 @@ public class DefaultDataSource implements DataSource {
 		this.url = config.getUrl();
 		this.driver = config.getDriver();
 		
-		String connectionPoolType = IdeaJdbcConfiguration.get("datasource.connectionpool", "default");
+		String connectionPoolType = IdeaJdbcConfiguration.get("datasource." + name + ".pool", "default");
 		if("default".equals(connectionPoolType.toLowerCase()) || "proxool".equals(connectionPoolType.toLowerCase())) {
 			if(connectionPool == null) {
 				connectionPool = new ProxoolConnectionPool(name, config);
@@ -55,8 +55,10 @@ public class DefaultDataSource implements DataSource {
 			
 		}else if("dbcp".equals(connectionPoolType.toLowerCase())){
 			
-		}else{
-			
+		}else if("druid".equals(connectionPoolType.toLowerCase())){
+		    if(connectionPool == null) {
+                connectionPool = new DruidConnectionPool(name, config);
+            }
 		}
 	}
 	

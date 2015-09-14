@@ -41,14 +41,14 @@ public class IdeaJdbcTransactionAspect {
 	
 	@Around(value="methodTxPointcut()", argNames="joinPoint")
 	public Object txAround(ProceedingJoinPoint joinPoint) throws Throwable {  
-		logger.debug("Init transaction strategy before method.");
-        
 		//对已有ScopeTransaction增加引用计数
 		ScopeTransactionManager.increaseRefCount();
 		
 		MethodSignature ms = (MethodSignature)joinPoint.getSignature();
         Method method = ms.getMethod();
         IdeaJdbcTx txAnn = (IdeaJdbcTx)method.getAnnotation(IdeaJdbcTx.class);
+        
+        logger.debug("Init transaction strategy before method[" + method.getName() + "]");
         
         TxStrategy strategy = new TxStrategy();
         strategy.setType(txAnn.type());
@@ -71,7 +71,7 @@ public class IdeaJdbcTransactionAspect {
         	ScopeTransactionManager.error(e);
     		throw e;
         } finally {
-        	logger.debug("Handle transaction after method.");
+        	logger.debug("Handle transaction after method[" + method.getName() + "].");
         	ScopeTransactionManager.end();
     		ScopeTransactionManager.reduceRefCount();
         }

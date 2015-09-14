@@ -107,10 +107,17 @@ public class TestIdeaJdbc {
 	public void testListToMap() {
 		IdeaJdbc.beginTransaction();
 		
-		List<Map<String, Object>> result = IdeaJdbc.query("SELECT * FROM T_USER").list();
-		assertEquals(2, result.size());
-		assertEquals("1", result.get(0).get("C_ID"));
-		assertEquals("Chinakite", result.get(0).get("NAME"));
+		String sql = "SELECT CONSTRAINT_NAME, table_name, column_name, referenced_table_name, referenced_column_name FROM information_schema.key_column_usage WHERE table_schema = 'aa101' AND referenced_table_name IS NOT NULL ";
+		
+//		List<Map<String, Object>> result = IdeaJdbc.query("SELECT * FROM T_USER").list();
+//		assertEquals(2, result.size());
+//		assertEquals("1", result.get(0).get("C_ID"));
+//		assertEquals("Chinakite", result.get(0).get("NAME"));
+		
+		List<Map<String, Object>> result = IdeaJdbc.query(sql).list();
+//        assertEquals(2, result.size());
+//        assertEquals("1", result.get(0).get("C_ID"));
+//        assertEquals("Chinakite", result.get(0).get("NAME"));
 		
 		IdeaJdbc.endTransaction();
 	}
