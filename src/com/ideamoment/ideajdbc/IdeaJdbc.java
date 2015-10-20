@@ -129,10 +129,21 @@ public class IdeaJdbc {
 	 * 更新实体
 	 * 
 	 * @param entity
-	 * @return
+	 * @return 影响的记录数
 	 */
 	public static int update(Object entity) {
 		return defaultDb().update(entity);
+	}
+	
+	/**
+	 * 更新实体,可决定是否忽略实体中的空值属性
+	 * 
+	 * @param entity
+	 * @param ignoreNullValue
+	 * @return 影响的记录数
+	 */
+	public static int update(Object entity, boolean ignoreNullValue) {
+	    return defaultDb().update(entity, ignoreNullValue);
 	}
 	
 	/**

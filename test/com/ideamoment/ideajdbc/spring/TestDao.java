@@ -24,7 +24,7 @@ import com.ideamoment.ideajdbc.transaction.Transaction;
  */
 @Service
 public class TestDao {
-	@IdeaJdbcTx(readOnly=true)
+//	@IdeaJdbcTx(readOnly=true)
 	public Transaction testQuery() {
 		Db db = IdeaJdbc.db("mysql");
 		User user = db.find(User.class, "1");

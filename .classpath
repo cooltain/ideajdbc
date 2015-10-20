@@ -32,5 +32,6 @@
 	<classpathentry kind="lib" path="lib/opts/org.springframework.aspects-3.1.1.RELEASE.jar"/>
 	<classpathentry kind="lib" path="lib/opts/aspectjrt-1.6.8.jar"/>
 	<classpathentry kind="lib" path="lib/opts/aspectjweaver-1.6.8.jar"/>
+	<classpathentry kind="lib" path="lib/depends/druid-1.0.15.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

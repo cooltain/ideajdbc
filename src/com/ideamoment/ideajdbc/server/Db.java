@@ -266,9 +266,22 @@ public class Db {
 	 */
 	public int update(Object entity) {
 		Transaction transaction = getTransaction();
-		UpdateAction updateAction = new UpdateAction(entity, transaction);
+		UpdateAction updateAction = new UpdateAction(entity, transaction, false);
 		return updateAction.execute();
 	}
+	
+	/**
+     * 更新一个实体, 可决定是否忽略实体中的空值属性
+     * 
+     * @param entity
+     * @param ignoreNullValue 默认为false
+     * @return
+     */
+    public int update(Object entity, boolean ignoreNullValue) {
+        Transaction transaction = getTransaction();
+        UpdateAction updateAction = new UpdateAction(entity, transaction, ignoreNullValue);
+        return updateAction.execute();
+    }
 	
 	/**
 	 * 准备更新某一个实体

@@ -84,10 +84,21 @@ public class SaveAction<T> extends AbstractAction<T> implements Action<T> {
 			}
 		}else{
 			if("uuid".equals(entityDescription.getIdDescription().getGenerator())) {
-				String id = (String)GeneratorFactory.getInstance().getGenerator("uuid").generate(entity);
-				idParam.setParamValue(id);
-				try {
-					PropertyUtils.setProperty(entity, entityDescription.getIdDescription().getName(), id);
+                String id = (String)GeneratorFactory.getInstance().getGenerator("uuid").generate(entity);
+                idParam.setParamValue(id);
+                try {
+                    PropertyUtils.setProperty(entity, entityDescription.getIdDescription().getName(), id);
+//				try {
+//				    Object idObj = PropertyUtils.getProperty(entity, entityDescription.getIdDescription().getName());
+//	                
+//				    if(idObj == null) {
+//    	                String id = (String)GeneratorFactory.getInstance().getGenerator("uuid").generate(entity);
+//    	                idParam.setParamValue(id);
+//    				    
+//    					PropertyUtils.setProperty(entity, entityDescription.getIdDescription().getName(), id);
+//				    }else{
+//				        idParam.setParamValue((String)idObj);
+//				    }
 				} catch (IllegalAccessException e) {
 					e.printStackTrace();
 				} catch (InvocationTargetException e) {

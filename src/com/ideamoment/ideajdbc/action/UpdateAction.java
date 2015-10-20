@@ -35,6 +35,7 @@ public class UpdateAction<T> extends AbstractAction<T> implements Action<T> {
 	private Transaction transaction;		//事务
 	private Object id;
 	private List<Parameter> updateProperties = new ArrayList<Parameter>();
+	private boolean ignoreNullValue = false;
 	
 	@Override
 	public Class getEntityClass() {
@@ -47,10 +48,11 @@ public class UpdateAction<T> extends AbstractAction<T> implements Action<T> {
 		}
 	}
 
-	public UpdateAction(T entity, Transaction transaction) {
+	public UpdateAction(T entity, Transaction transaction, boolean ignoreNullValue) {
 		this.entity = entity;
 		this.entityClass = entity.getClass();
 		this.transaction = transaction;
+		this.ignoreNullValue = ignoreNullValue;
 	}
 
 	public UpdateAction(Class<T> entityClass, Object id, Transaction transaction) {
@@ -67,7 +69,7 @@ public class UpdateAction<T> extends AbstractAction<T> implements Action<T> {
 			this.entityClass = this.entity.getClass();
 		}
 		
-		JdbcSql sql = parseEntityToSql();
+		JdbcSql sql = parseEntityToSql(this.ignoreNullValue);
 		
 		//执行Sql并返回结果
 		SqlExecutor executor = new SqlExecutor();
@@ -93,7 +95,7 @@ public class UpdateAction<T> extends AbstractAction<T> implements Action<T> {
 		return this;
 	}
 	
-	private JdbcSql parseEntityToSql() {
+	private JdbcSql parseEntityToSql(boolean ignoreNullValue) {
 		try {
 		    JdbcEntityDescription entityDesc = JdbcEntityDescriptionFactory.getInstance().getEntityDescription(this.entityClass);
 			IdDescription idDesc = entityDesc.getIdDescription();
@@ -110,7 +112,10 @@ public class UpdateAction<T> extends AbstractAction<T> implements Action<T> {
 				List<PropertyDescription> properties = entityDesc.getProperties();
 				int i=0;
 				for(PropertyDescription propDesc : properties) {
-					if(i > 0) {
+					Object propValue = PropertyUtils.getProperty(entity, propDesc.getName());
+					if(ignoreNullValue && propValue == null) continue;
+					
+				    if(i > 0) {
 						sb.append(", ");
 					}
 					sb.append(propDesc.getDataItem())
@@ -118,7 +123,7 @@ public class UpdateAction<T> extends AbstractAction<T> implements Action<T> {
 					
 					JdbcSqlParam param = new JdbcSqlParam();
 					param.setType(propDesc.getType());
-					param.setParamValue(PropertyUtils.getProperty(entity, propDesc.getName()));
+					param.setParamValue(propValue);
 					
 					params.add(param);
 					

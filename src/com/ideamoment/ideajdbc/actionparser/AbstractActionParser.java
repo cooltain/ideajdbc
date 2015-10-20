@@ -9,8 +9,10 @@ import java.lang.reflect.Array;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.Stack;
 
 import org.apache.commons.lang3.StringUtils;
@@ -148,7 +150,33 @@ public class AbstractActionParser {
 				String postSql = sql.substring(quesPos + 1);
 				sql = preSql + conbuffer.toString() + postSql;
 				i = i + tempParams.length;
-			}else{
+			}else if(p.getValue() instanceof Set){ //处理Set参数
+                Set tempParams = (Set)p.getValue();
+                Iterator ite = tempParams.iterator();
+                StringBuffer conbuffer = new StringBuffer();
+                int m=0;
+                while(ite.hasNext()) {
+                    if(m > 0) {
+                        conbuffer.append(", ");
+                    }
+                    conbuffer.append("?");
+                    
+                    Object tempParam = ite.next();
+                    
+                    JdbcSqlParam jdbcSqlParam = new JdbcSqlParam();
+                    jdbcSqlParam.setType(determineDataItemType(tempParam.getClass()));
+                    jdbcSqlParam.setParamValue(tempParam);
+                    sqlParams.add(jdbcSqlParam);
+                    
+                    m++;
+                }
+                int quesPos = StringUtils.ordinalIndexOf(sql, "?", (i+1));
+                String preSql = sql.substring(0, quesPos);
+                String postSql = sql.substring(quesPos + 1);
+                sql = preSql + conbuffer.toString() + postSql;
+                i = i + tempParams.size();
+            }
+			else{
 				JdbcSqlParam jdbcSqlParam = new JdbcSqlParam();
 				jdbcSqlParam.setType(getParamType(p));
 				jdbcSqlParam.setParamValue(p.getValue());

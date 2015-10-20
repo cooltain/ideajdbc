@@ -75,7 +75,7 @@ public class PreparedStatementLoggingHandler extends StatementLoggingHandlerTemp
             }
         }
 
-        if (r instanceof ResultSet) {
+        if (IdeaJdbcLogConfiguration.logResultSetDetail && r instanceof ResultSet) {
             r = wrapByResultSetProxy((ResultSet) r);
         }
 

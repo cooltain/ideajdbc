@@ -39,8 +39,10 @@ public class ScopeTransactionManager {
 			for(String dbName : existsTxMap.keySet()) {
 				ScopeTransaction scopeTx = ScopeTransactionThreadLocal.get(dbName);
 				if(scopeTx != null) {
-					scopeTx.reduceCount();
-					logger.debug("Reduce [" + dbName + "] RefCount to " + scopeTx.getRefCount());
+				    if(scopeTx.getRefCount() > 0) {
+    					scopeTx.reduceCount();
+    					logger.debug("Reduce [" + dbName + "] RefCount to " + scopeTx.getRefCount());
+				    }
 				}
 			}
 		}

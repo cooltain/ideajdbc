@@ -28,6 +28,7 @@ import com.ideamoment.ideadata.description.PropertyDescription;
 import com.ideamoment.ideadata.description.RefDescription;
 import com.ideamoment.ideadata.util.ReflectUtil;
 import com.ideamoment.ideadata.util.TypeUtil;
+import com.ideamoment.ideajdbc.action.ColumnNameDecoration;
 import com.ideamoment.ideajdbc.action.Query;
 import com.ideamoment.ideajdbc.description.JdbcEntityDescription;
 import com.ideamoment.ideajdbc.description.JdbcEntityDescriptionFactory;
@@ -48,7 +49,7 @@ public class ResultHandler<T> {
 	 * @param rs SQL结果集
 	 * @return 结果列表
 	 */
-	public List<Map<String, Object>> handleResultToMap(ResultSet rs) {
+	public List<Map<String, Object>> handleResultToMap(ResultSet rs, ColumnNameDecoration decoration) {
 		List<Map<String, Object>> result = new ArrayList<Map<String, Object>>();
 		
 		try {
@@ -73,9 +74,17 @@ public class ResultHandler<T> {
 					String columnLabel = rsMetaData.getColumnLabel(i);
 					if(isMultiTable) {
 						String tableLabel = rsMetaData.getTableName(i);
-						record.put(tableLabel + "."+ columnLabel, rs.getObject(i));
+						if(decoration != null) {
+						    record.put(decoration.decorate(tableLabel + "."+ columnLabel), rs.getObject(i));
+						}else{
+						    record.put(tableLabel + "."+ columnLabel, rs.getObject(i));
+						}
 					}else{
-						record.put(columnLabel, rs.getObject(i));
+					    if(decoration != null) {
+					        record.put(decoration.decorate(columnLabel), rs.getObject(i));
+					    }else{
+					        record.put(columnLabel, rs.getObject(i));
+					    }
 					}
 				}
 				result.add(record);
@@ -223,13 +232,21 @@ public class ResultHandler<T> {
 				if(entity == null) {    //如果缓存中没有
 					entity = entityClass.newInstance();
 					String idPropName = entityDescription.getIdDescription().getName();
-					PropertyUtils.setProperty(entity, idPropName, id);
+					try {
+					    PropertyUtils.setProperty(entity, idPropName, id);
+					}catch(IllegalArgumentException iae) {
+					    PropertyUtils.setProperty(entity, idPropName, String.valueOf(id));
+					}
 					
 					List<SelectColumnInfo> mainColInfoes = mainEntity.getColInfoes();
 					for(SelectColumnInfo colInfo : mainColInfoes) {
 						DataItemType type = entityDescription.getPropertyDescription(colInfo.getPropName()).getType();
 						Object value = retriveResultSetValue(rs, colInfo.getFullAliasName(), type);
-						PropertyUtils.setProperty(entity, colInfo.getPropName(), value);
+						try {
+						    PropertyUtils.setProperty(entity, colInfo.getPropName(), value);
+	                    }catch(IllegalArgumentException iae) {
+	                        PropertyUtils.setProperty(entity, colInfo.getPropName(), String.valueOf(value));
+	                    }
 					}
 					putEntityToCache(entityCache, entityClass, id, entity);
 					
@@ -375,6 +392,36 @@ public class ResultHandler<T> {
 		
 		return result;
 	}
+	
+	/**
+     * 返回单列结果，返回为ArrayList列表
+     * 
+     * @param rs
+     * @return
+     */
+    public List handleResultToListValue(ResultSet rs) {
+        List result = new ArrayList();
+        
+        try {
+            ResultSetMetaData rsMetaData = rs.getMetaData();
+            while(rs.next()) {
+                result.add(rs.getObject(1));
+            }
+        }catch (SQLException e) {
+            e.printStackTrace();
+            throw new IdeaJdbcException(IdeaJdbcExceptionCode.RESULT_HANDLE_ERR, "Handle ResultSet error.", e);
+        } finally {
+            try {
+                rs.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+                rs = null;
+                throw new IdeaJdbcException(IdeaJdbcExceptionCode.RESULT_HANDLE_ERR, "Handle ResultSet error.", e);
+            }
+        }
+        
+        return result;
+    }
 	
 	/**
 	 * @param colInfo

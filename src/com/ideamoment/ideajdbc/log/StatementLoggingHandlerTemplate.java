@@ -118,7 +118,7 @@ public abstract class StatementLoggingHandlerTemplate extends LoggingHandlerSupp
     protected void logAfterInvoke(Object proxy, Method method, Object[] args, Object result, long elapsedTimeInNano, StringBuilder message) {
 
         StringBuilder endMessage = message;
-        if ( ! IdeaJdbcLogConfiguration.logDetailAfterStatement) {
+        if (! IdeaJdbcLogConfiguration.logDetailAfterStatement) {
             // replace the log message to a simple message
 
             endMessage = new StringBuilder("END:    ")

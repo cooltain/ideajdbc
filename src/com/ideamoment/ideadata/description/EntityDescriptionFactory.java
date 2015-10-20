@@ -123,8 +123,12 @@ public class EntityDescriptionFactory {
 					String generator = idInfo.generator();
 					idDescription.setGenerator(generator);
 					
-					idDescription.setType(determineDataItemType(field));
-					
+					if(idInfo.type() != null && idInfo.type() != DataItemType.UNKNOWN) {
+					    idDescription.setType(idInfo.type());
+					}else{
+					    idDescription.setType(determineDataItemType(field));
+					}
+					    
 					if(propertyDecorations != null && propertyDecorations.size() > 0) {
 						for(PropertyDescriptionDecoration decoration : propertyDecorations) {
 							idDescription = decoration.decorate(idDescription);
@@ -138,7 +142,13 @@ public class EntityDescriptionFactory {
 					readPropertyDesc(field, propertyDescription, propInfo);
 					
 					propertyDescription.setName(field.getName());
-					propertyDescription.setType(determineDataItemType(field));
+					
+					if(propInfo.type() != null && propInfo.type() != DataItemType.UNKNOWN) {
+					    propertyDescription.setType(propInfo.type());
+					}else{
+					    propertyDescription.setType(determineDataItemType(field));
+					}
+					
 					propertyDescription.setNullable(propInfo.nullable());
 					propertyDescription.setDefaultValue(propInfo.defaultValue());
 					

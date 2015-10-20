@@ -5,6 +5,7 @@
  */
 package com.ideamoment.ideadata.util;
 
+import java.math.BigDecimal;
 import java.util.Date;
 
 import com.ideamoment.ideadata.annotation.DataItemType;
@@ -62,7 +63,9 @@ public class TypeUtil {
 				return DataItemType.TIMESTAMP;
 			}else if(clazz.equals(java.sql.Blob.class)) {
 			    return DataItemType.BLOB;
-			}
+			}else if(clazz.equals(BigDecimal.class)) {
+                return DataItemType.DECIMAL;
+            }
 		}
 		
 		return null;

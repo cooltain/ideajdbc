@@ -287,6 +287,21 @@ public class TestIdeaJdbc {
 	}
 	
 	@Test
+    public void testUpdateIgnoreNullValue() {
+        IdeaJdbc.beginTransaction();
+        
+        IdeaJdbc.update(BeanForUpdate.class, "1").setProperty("name", "C3").execute();
+        
+        
+        BeanForUpdate bfu = new BeanForUpdate();
+        bfu.setId("2");
+        bfu.setPrice(3.14f);
+        IdeaJdbc.update(bfu, true);
+        
+        IdeaJdbc.commitTransaction();
+    }
+	
+	@Test
 	public void testUniqueValue() {
 		IdeaJdbc.beginTransaction();
 		

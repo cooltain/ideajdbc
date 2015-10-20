@@ -18,11 +18,12 @@ public class IdeaJdbcLogConfiguration {
 	public static boolean printFullStackTrace = false;
 	public static String printStackTracePattern = null;
 	public static boolean inlineQueryParams = true;
-	public static RdbmsSpecifics rdbmsSpecifics = new MySqlRdbmsSpecifics(); // oracle is default db.
+	public static RdbmsSpecifics rdbmsSpecifics = new MySqlRdbmsSpecifics(); // mysql is default db.
 	public static boolean logBeforeStatement = false;
 	public static boolean logDetailAfterStatement = true;
 	public static boolean logAddBatchDetail = true;
 	public static boolean logExecuteBatchDetail =true;
+	public static boolean logResultSetDetail = true;
 
     static {
     	if(!IdeaJdbcConfiguration.inited) {
@@ -38,6 +39,7 @@ public class IdeaJdbcLogConfiguration {
     	logDetailAfterStatement = IdeaJdbcConfiguration.getBoolean("ideajdbc.log.logDetailAfterStatement", true);
     	logAddBatchDetail = IdeaJdbcConfiguration.getBoolean("ideajdbc.log.logAddBatchDetail", true);
     	logExecuteBatchDetail = IdeaJdbcConfiguration.getBoolean("ideajdbc.log.logExecuteBatchDetail", true);
+    	logResultSetDetail = IdeaJdbcConfiguration.getBoolean("ideajdbc.log.logResultSetDetail", true);
     }
     
 }

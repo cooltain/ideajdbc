@@ -25,12 +25,42 @@ public interface Query<T> extends Action<T> {
 	public List list();
 	
 	/**
+	 * 根据当前查询动作信息执行查询，如果查询动作中没有指定实体类，则将返回的结果映射为一个map的列表。
+     * 如果是单表，以字段为key，如果是多表，则以表名.字段名为key, 在转换为key的时候会使用decoration
+     * 进行装饰。
+	 * 
+	 * @param decoration
+	 * @return
+	 */
+	public List list(ColumnNameDecoration decoration);
+	
+	
+	/**
+	 * 将查询结构转换为ArrayList列表。
+	 * <b>注意：</b>这个方法只处理第一列数据，如果结果集中有多列数据，只有第一列数据会被查询。
+	 * 
+	 * @return
+	 */
+	public List listValue();
+	
+	/**
 	 * <p>返回分页查询结果</p>
 	 * <b>注意：</b>这个方法适合于查询小表的分页，对于大数据量的查询需要自行优化sql语句，封装相应的方法来实现。
 	 * 
 	 * @return
 	 */
 	public Page page(int currentPage, int pageSize);
+	
+	/**
+     * <p>返回分页查询结果</p>
+     * <b>注意：</b>这个方法适合于查询小表的分页，对于大数据量的查询需要自行优化sql语句，封装相应的方法来实现。
+     * 
+	 * @param currentPage
+	 * @param pageSize
+	 * @param decoration
+	 * @return
+	 */
+	public Page page(int currentPage, int pageSize, ColumnNameDecoration decoration);
 	
 	/**
 	 * 根据当前查询动作信息执行查询，如果查询动作中没有指定实体类，则将返回的结果映射为一个map的Map实例，实例中以id为key，数据对象为value。
@@ -161,6 +191,16 @@ public interface Query<T> extends Action<T> {
 	 * @return List 查询结果列表
 	 */
 	public List<T> rangeList(int start, int end);
+	
+	/**
+     * 根据当前查询动作信息执行范围查询。
+     * 
+     * @param start
+     * @param end
+     * @param decoration
+     * @return
+     */
+    public List<T> rangeList(int start, int end, ColumnNameDecoration decoration);
 	
 	/**
 	 * 根据当前查询动作信息执行范围查询。

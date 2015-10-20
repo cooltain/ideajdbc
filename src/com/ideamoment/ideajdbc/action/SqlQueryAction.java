@@ -89,8 +89,12 @@ public class SqlQueryAction<T> extends AbstractAction<T> implements Query<T> {
 		return entityClass;
 	}
 
-	@Override
 	public List list() {
+	    return list(null);
+	}
+	
+	@Override
+	public List list(ColumnNameDecoration decoration) {
 		checkTransaction(transaction);
 		
 		//使用ActionParser解析
@@ -112,11 +116,30 @@ public class SqlQueryAction<T> extends AbstractAction<T> implements Query<T> {
             }
 			return result;
 		}else{
-			return handler.handleResultToMap(rs);
+			return handler.handleResultToMap(rs, decoration);
 		}
 	}
 
-	@Override
+	/* (non-Javadoc)
+     * @see com.ideamoment.ideajdbc.action.Query#listValue()
+     */
+    @Override
+    public List listValue() {
+        checkTransaction(transaction);
+        
+        //使用ActionParser解析
+        ActionParser parser = new SqlQueryParser();
+        JdbcSql sql = parser.parse(this);
+        
+        //执行Sql并返回结果
+        SqlExecutor executor = new SqlExecutor();
+        ResultSet rs = executor.executeQuery(sql, transaction);
+        
+        ResultHandler handler = new ResultHandler();
+        return handler.handleResultToListValue(rs);
+    }
+
+    @Override
     public T uniqueTo(Class<T> entityClass) {
 	    return uniqueTo(entityClass, false);
 	}
@@ -199,7 +222,12 @@ public class SqlQueryAction<T> extends AbstractAction<T> implements Query<T> {
     }
 	
 	@Override
-	public List<T> rangeList(int start, int end) {
+    public List<T> rangeList(int start, int end) {
+	    return rangeList(start, end, null);
+	}
+	
+	@Override
+	public List<T> rangeList(int start, int end, ColumnNameDecoration decoration) {
 		checkTransaction(transaction);
 		
 		//使用ActionParser解析
@@ -228,7 +256,7 @@ public class SqlQueryAction<T> extends AbstractAction<T> implements Query<T> {
             }
 			return result;
 		}else{
-			return handler.handleResultToMap(rs);
+			return handler.handleResultToMap(rs, decoration);
 		}
 	}
 	
@@ -342,7 +370,12 @@ public class SqlQueryAction<T> extends AbstractAction<T> implements Query<T> {
 	}
 
 	@Override
-	public Page page(int currentPage, int pageSize) {
+    public Page page(int currentPage, int pageSize) {
+	    return page(currentPage, pageSize, null);
+	}
+	
+	@Override
+	public Page page(int currentPage, int pageSize, ColumnNameDecoration decoration) {
 		checkTransaction(transaction);
 		
 		//使用ActionParser解析
@@ -373,7 +406,7 @@ public class SqlQueryAction<T> extends AbstractAction<T> implements Query<T> {
 		if(this.entityClass != null) {
 			datas = handler.handleResultToEntity(rs, entityClass, this, false);
 		}else{
-			datas = handler.handleResultToMap(rs);
+			datas = handler.handleResultToMap(rs, decoration);
 		}
 		
 		Page page = new Page();

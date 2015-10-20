@@ -62,7 +62,7 @@ public class StatementLoggingHandler extends StatementLoggingHandlerTemplate {
             }
         }
 
-        if (r instanceof ResultSet) {
+        if (IdeaJdbcLogConfiguration.logResultSetDetail && r instanceof ResultSet) {
             r = wrapByResultSetProxy((ResultSet) r);
         }
 
