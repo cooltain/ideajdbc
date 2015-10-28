@@ -1,5 +1,7 @@
 package com.ideamoment.ideajdbc.log;
 
+import java.sql.SQLFeatureNotSupportedException;
+
 import javax.sql.DataSource;
 
 public class DataSourceProxy extends DataSourceProxyBase implements DataSource {
@@ -9,5 +11,4 @@ public class DataSourceProxy extends DataSourceProxyBase implements DataSource {
     public DataSourceProxy() throws IdeaJdbcLogException {
         super();
     }
-
 }

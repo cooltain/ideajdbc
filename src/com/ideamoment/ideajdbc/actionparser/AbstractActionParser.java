@@ -35,7 +35,7 @@ public class AbstractActionParser {
 	 * @return 参数数组
 	 */
 	protected JdbcSql buildJdbcSql(String sql, Map<Object, Parameter> parameters) {
-		Parameter[] params = new Parameter[parameters.size()];
+		List<Parameter> params = new ArrayList<Parameter>();
 		Stack opStack = new Stack();
 		StringBuffer paramNameBuffer = new StringBuffer();
 		int t = 0;		//params的总计数器
@@ -52,7 +52,7 @@ public class AbstractActionParser {
 							throw new IdeaJdbcException(IdeaJdbcExceptionCode.SQL_PARAMETER_PARSER_ERR, "The SQL is wrong with parameters.");
 						}
 						//获取参数放入参数列表的正确位置
-						params[t] = parameters.get(c);
+						params.add(parameters.get(c));
 						t++;
 						c++;
 					}else if(ch == ':'){		//如果是冒号，开始识别参数名
@@ -63,7 +63,7 @@ public class AbstractActionParser {
 						if(paramNameBuffer.length() > 0) {
 							String paramName = paramNameBuffer.deleteCharAt(0).toString();
 							//获取参数放入参数列表的正确位置
-							params[t] = parameters.get(paramName);
+							params.add(parameters.get(paramName));
 							paramNameBuffer = new StringBuffer();
 							//将sql语句中的参数名称替换为问号
 							sql = sql.substring(0, lastColon) + "?" + sql.substring(i);
@@ -95,11 +95,11 @@ public class AbstractActionParser {
 		 * 如果参数名后SQL语句就结束了，这时前面写的处理空格的逻辑不会被触发，因此要补救一下
 		 */
 		if(paramNameBuffer.length() > 0) {
-			params[t] = parameters.get(paramNameBuffer.deleteCharAt(0).toString());
+			params.add(parameters.get(paramNameBuffer.deleteCharAt(0).toString()));
 			sql = sql.substring(0, lastColon) + "?";
 		}
 		
-		List<JdbcSqlParam> sqlParams = new ArrayList<JdbcSqlParam>(params.length);
+		List<JdbcSqlParam> sqlParams = new ArrayList<JdbcSqlParam>(params.size());
 		int i = 0;
 		for(Parameter p : params) {
 		    if(p.getValue() == null) {

@@ -10,8 +10,10 @@ import java.sql.Driver;
 import java.sql.DriverManager;
 import java.sql.DriverPropertyInfo;
 import java.sql.SQLException;
+import java.sql.SQLFeatureNotSupportedException;
 import java.util.Properties;
 import java.util.StringTokenizer;
+import java.util.logging.Logger;
 
 import static com.ideamoment.ideajdbc.log.Loggers.*;
 
@@ -139,5 +141,9 @@ public class DriverLoggingProxy implements Driver {
 	public boolean jdbcCompliant() {
 		return false;
 	}
+
+    public java.util.logging.Logger getParentLogger() throws SQLFeatureNotSupportedException {
+        return null;
+    }
 
 }

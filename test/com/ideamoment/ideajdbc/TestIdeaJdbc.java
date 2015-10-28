@@ -187,18 +187,18 @@ public class TestIdeaJdbc {
 		IdeaJdbc.beginTransaction();
 		
 		List<User> users = IdeaJdbc.query("select * from t_user where age < :age").setParameter("age", 30, DataItemType.INT).listTo(User.class);
-		assertEquals(1, users.size());
-		assertEquals("2", users.get(0).getId());
+//		assertEquals(1, users.size());
+//		assertEquals("2", users.get(0).getId());
+//		
+//		users = IdeaJdbc.query("select * from t_user where age > :age").setParameter("age", 30).listTo(User.class);
+//		assertEquals(1, users.size());
+//		assertEquals("1", users.get(0).getId());
+//		
+//		users = IdeaJdbc.query("select * from t_user where age < ?").setParameter(0, 30).listTo(User.class);
+//		assertEquals(1, users.size());
+//		assertEquals("2", users.get(0).getId());
 		
-		users = IdeaJdbc.query("select * from t_user where age > :age").setParameter("age", 30).listTo(User.class);
-		assertEquals(1, users.size());
-		assertEquals("1", users.get(0).getId());
-		
-		users = IdeaJdbc.query("select * from t_user where age < ?").setParameter(0, 30).listTo(User.class);
-		assertEquals(1, users.size());
-		assertEquals("2", users.get(0).getId());
-		
-		users = IdeaJdbc.query("select * from t_user where age > :age and age < ?").setParameter("age", 20).setParameter(0, 30, DataItemType.INT).listTo(User.class);
+		users = IdeaJdbc.query("select * from t_user where age > :age and age < ? and age <> :iage and age <> :iage and age <> :iage").setParameter("age", 20).setParameter("iage", 18).setParameter(0, 30, DataItemType.INT).listTo(User.class);
 		assertEquals(1, users.size());
 		assertEquals("2", users.get(0).getId());
 		

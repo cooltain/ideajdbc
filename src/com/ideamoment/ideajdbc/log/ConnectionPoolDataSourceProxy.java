@@ -1,5 +1,8 @@
 package com.ideamoment.ideajdbc.log;
 
+import java.sql.SQLFeatureNotSupportedException;
+import java.util.logging.Logger;
+
 import javax.sql.ConnectionPoolDataSource;
 import javax.sql.DataSource;
 

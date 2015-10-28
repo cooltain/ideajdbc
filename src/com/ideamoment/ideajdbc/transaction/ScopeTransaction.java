@@ -116,7 +116,9 @@ public class ScopeTransaction implements Transaction{
 	public void onSuccess() {
 		TxType txType = strategy.getType();
 		if(txType == TxType.REQUIRED || txType == TxType.REQUIRES_NEW) {
-			if(!this.nested && this.refCount == 0) {
+			if(strategy.isReadOnly()) {
+			    logger.debug("Transaction[" + this.dbName + "] not commit on success since READONLY Mode. ");
+			}else if(!this.nested && this.refCount == 0) {
 				this.transaction.commit();
 				logger.debug("Transaction[" + this.dbName + "] commit on success.");
 			}else{
