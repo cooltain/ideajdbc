@@ -5,6 +5,8 @@
  */
 package com.ideamoment.ideajdbc;
 
+import java.util.Collection;
+
 import com.ideamoment.ideadata.description.PropertyDescriptionDecoration;
 import com.ideamoment.ideajdbc.action.Command;
 import com.ideamoment.ideajdbc.action.Query;
@@ -174,6 +176,15 @@ public class IdeaJdbc {
 	 */
 	public static Db defaultDb() {
 		return DbManager.getInstance().getDefaultDb();
+	}
+	
+	/**
+	 * 获取当前管理的所有Db.
+	 * 
+	 * @return
+	 */
+	public static Collection<Db> getAllDbs() {
+	    return DbManager.getInstance().getAllDbs();
 	}
 	
 	/**

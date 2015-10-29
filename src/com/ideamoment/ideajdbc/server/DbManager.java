@@ -7,6 +7,7 @@ package com.ideamoment.ideajdbc.server;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -204,5 +205,9 @@ public class DbManager {
 				defaultDb = db;
 			}
 		}
+	}
+	
+	public Collection<Db> getAllDbs() {
+	    return syncMap.values();
 	}
 }
