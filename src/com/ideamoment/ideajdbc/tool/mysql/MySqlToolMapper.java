@@ -30,6 +30,7 @@ public class MySqlToolMapper {
 		lengthMapper.put(DataItemType.TIME, -1);
 		lengthMapper.put(DataItemType.DATETIME, -1);
 		lengthMapper.put(DataItemType.TIMESTAMP, -1);
+		lengthMapper.put(DataItemType.DECIMAL, -1);
 	}
 	
 	/**
@@ -47,5 +48,6 @@ public class MySqlToolMapper {
 		typeMapper.put(DataItemType.TIME, "Time");
 		typeMapper.put(DataItemType.DATETIME, "datetime");
 		typeMapper.put(DataItemType.TIMESTAMP, "timestamp");
+		typeMapper.put(DataItemType.DECIMAL, "decimal");
 	}
 }

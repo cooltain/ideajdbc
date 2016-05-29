@@ -44,6 +44,7 @@
         <jar destfile="dist/ideajdbc-0.1.jar" > 
             <fileset dir="./bin">
             	<exclude name="**/Test*.class"/>
+            	<exclude name="**/AbstractTestCase.class"/>
             	<exclude name="**/ideajdbc.properties"/>
             </fileset>
         </jar>

@@ -59,7 +59,9 @@ public class ResultHandler<T> {
 			HashSet<String> tableNameCache = new HashSet<String>();
 			for(int i=1; i<=columnCount; i++) {
 				String tableLabel = rsMetaData.getTableName(i);
-				tableNameCache.add(tableLabel);
+				if(tableLabel != null && tableLabel.trim().length() > 0) {
+				    tableNameCache.add(tableLabel);
+				}
 			}
 			
 			boolean isMultiTable = false;
@@ -80,6 +82,10 @@ public class ResultHandler<T> {
 						    record.put(tableLabel + "."+ columnLabel, rs.getObject(i));
 						}
 					}else{
+					    int dotPos = columnLabel.indexOf(".");
+					    if(dotPos > -1) {
+					        columnLabel = columnLabel.substring(dotPos+1);
+					    }
 					    if(decoration != null) {
 					        record.put(decoration.decorate(columnLabel), rs.getObject(i));
 					    }else{
@@ -311,9 +317,10 @@ public class ResultHandler<T> {
 								PropertyUtils.setProperty(entity, key, refEntityObj);
 							}
 						}
-					}else{
-						throw new IdeaJdbcException(IdeaJdbcExceptionCode.RESULT_HANDLE_ERR, "Can not find Id column of [" + entityClass.getName() + "] on row <" + rowIndex + ">。");
 					}
+//					else{
+//						throw new IdeaJdbcException(IdeaJdbcExceptionCode.RESULT_HANDLE_ERR, "Can not find Id column of [" + entityClass.getName() + "] on row <" + rowIndex + ">。");
+//					}
 				}
 				rowIndex++;
 			}
@@ -532,9 +539,9 @@ public class ResultHandler<T> {
 			SelectColumnInfo colInfo) {
 		String col = colInfo.getColumnName();
 		PropertyDescription idDesc=entityDescription.getIdDescription();//判断是不是主键
-		if(idDesc.getDataItem().equalsIgnoreCase(col))
+		if(idDesc.getDataItem().equals(col.toUpperCase()) || idDesc.getName().equals(col)) {
 			colInfo.setPropName(idDesc.getName());
-		else{//不是的话就找propertyDescription
+	    }else{//不是的话就找propertyDescription
 			PropertyDescription propDesc = entityDescription.getPropertyDescription(col);
 			
 			if(propDesc == null) {

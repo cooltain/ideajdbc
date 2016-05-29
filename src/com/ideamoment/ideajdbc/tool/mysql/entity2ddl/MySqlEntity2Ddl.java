@@ -45,10 +45,10 @@ public class MySqlEntity2Ddl {
 	
 	private static String ENGINE = "InnoDB";
 	private static String CHARSET = "utf8";
-	private static String COLLATE = "utf8_unicode_ci";
+	private static String COLLATE = "utf8_general_ci";
 	
-	public void scanAndSyncTables(String basePacageName,String dbName, String catalog, String schemaPattern, boolean dropWhenExist ){
-		Set<Class<?>> classes=getAllEntityClasses(basePacageName);
+	public void scanAndSyncTables(String basePackageName,String dbName, String catalog, String schemaPattern, boolean dropWhenExist ){
+		Set<Class<?>> classes=getAllEntityClasses(basePackageName);
 		if(classes!=null&&classes.size()!=0){
 			for(Class<?> entityClass:classes){
 				syncTable(dbName,catalog, schemaPattern,entityClass,dropWhenExist);
@@ -59,14 +59,14 @@ public class MySqlEntity2Ddl {
 	/**
 	 * 指定包名得到所有的带@Entity注解的类
 	 */
-	public Set<Class<?>> getAllEntityClasses(String basePacageName){
+	public Set<Class<?>> getAllEntityClasses(String basePackageName){
 		Set<Class<?>> classes=new HashSet<Class<?>>();
-		String[] folderArr=basePacageName.split("\\.");
+		String[] folderArr=basePackageName.split("\\.");
 		List<String> folderList=new LinkedList<String>();
 		for(String folderName:folderArr){
 			folderList.add(folderName);
 		}
-		String packageName = basePacageName;
+		String packageName = basePackageName;
         if (packageName.endsWith(".")) {
             packageName = packageName
                     .substring(0, packageName.lastIndexOf('.'));
@@ -200,6 +200,7 @@ public class MySqlEntity2Ddl {
 			return b;
 		}
 	}
+	
 	public boolean isMatchTwoStars(String name){
 		return name.contains("**");
 	}
@@ -484,7 +485,7 @@ public class MySqlEntity2Ddl {
 			}
 		}else{
 			if(propertyDesc.isNullable()) {
-				sb.append(" DEFAULT NULL");
+				sb.append(" DEFAULT NULL ");
 			}
 		}
 		
