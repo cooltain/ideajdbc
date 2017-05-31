@@ -49,6 +49,8 @@ public class ProxoolConnectionPool implements ConnectionPool {
 		info.setProperty("proxool.simultaneous-build-throttle", String.valueOf(config.getMaxConnections()));
 		info.setProperty("proxool.maximum-active-time", String.valueOf(config.getMaxActiveTime()));
 		info.setProperty("proxool.maximum-connection-lifetime", String.valueOf(config.getMaxConnectionLifetime()));
+		info.setProperty("proxool.test-before-use", String.valueOf(config.isTestBeforeUse()));
+		info.setProperty("proxool.test-after-use", String.valueOf(config.isTestAfterUse()));
 		info.setProperty("user", config.getUsername());
 		info.setProperty("password", config.getPassword());
 		String alias = name;

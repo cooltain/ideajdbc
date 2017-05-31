@@ -10,31 +10,35 @@ import com.ideamoment.ideadata.configuration.IdeaDataConfiguration;
 
 /**
  * 数据源配置信息.
- * 
+ *
  * @author Chinakite Zhang
  * @version 2010/10/11
  * @since 0.1
  */
 public class DataSourceConfig {
-	String url;		
-	
-	String username;		
-	
+	String url;
+
+	String username;
+
 	String password;
-	
+
 	String driver;
-	
+
 	int minConnections = 2;
-	
+
 	int maxConnections = 15;
-	
+
 	String heartbeatSql;
-	
+
 	int heartbeatSleepTime = 5000;
-	
-    int maxConnectionLifetime = 1440000;
-	
+
+	int maxConnectionLifetime = 1440000;
+
 	int maxActiveTime = 300;
+
+	boolean testBeforeUse = false;
+
+	boolean testAfterUse = false;
 
 	/**
 	 * Return the connection URL.
@@ -156,7 +160,7 @@ public class DataSourceConfig {
 		this.maxConnectionLifetime = maxConnectionLifetime;
 	}
 
-		/**
+	/**
 	 * Return the time in seconds a connection can be idle after
 	 * which it can be trimmed from the pool.
 	 * <p>
@@ -181,41 +185,61 @@ public class DataSourceConfig {
 	}
 
 	/**
-     * @return the heartbeatSleepTime
-     */
-    public int getHeartbeatSleepTime() {
-        return heartbeatSleepTime;
-    }
+	 * @return the heartbeatSleepTime
+	 */
+	public int getHeartbeatSleepTime() {
+		return heartbeatSleepTime;
+	}
 
-    /**
-     * @param heartbeatSleepTime the heartbeatSleepTime to set
-     */
-    public void setHeartbeatSleepTime(int heartbeatSleepTime) {
-        this.heartbeatSleepTime = heartbeatSleepTime;
-    }
-	
+	/**
+	 * @param heartbeatSleepTime the heartbeatSleepTime to set
+	 */
+	public void setHeartbeatSleepTime(int heartbeatSleepTime) {
+		this.heartbeatSleepTime = heartbeatSleepTime;
+	}
+
+	public boolean isTestBeforeUse() {
+
+		return testBeforeUse;
+	}
+
+	public void setTestBeforeUse(boolean testBeforeUse) {
+
+		this.testBeforeUse = testBeforeUse;
+	}
+
+	public boolean isTestAfterUse() {
+
+		return testAfterUse;
+	}
+
+	public void setTestAfterUse(boolean testAfterUse) {
+
+		this.testAfterUse = testAfterUse;
+	}
+
 	/**
 	 * Load the settings from ebean.properties.
 	 */
 	public void loadSettings(String dbName){
-		
+
 		String prefix = "datasource."+dbName+".";
-		
+
 		username = IdeaDataConfiguration.get(prefix+"username", null);
 		password = IdeaDataConfiguration.get(prefix+"password", null);
-		
+
 		String v;
-		
+
 		v = IdeaDataConfiguration.get(prefix+"databaseDriver", null);
 		driver = IdeaDataConfiguration.get(prefix+"driver", v);
-		
-		
+
+
 		v = IdeaDataConfiguration.get(prefix+"databaseUrl", null);
 		url = IdeaDataConfiguration.get(prefix+"url", v);
-		
+
 		//处理日志
 		if(IdeaDataConfiguration.getBoolean("ideajdbc.log", false)) {
-		    String[] protocolTmp = url.split("://");
+			String[] protocolTmp = url.split("://");
 			String[] tmp = protocolTmp[0].split(":");
 			url = tmp[0] + ":ideajdbc:" + tmp[1] + "://" + protocolTmp[1];
 			if(url.indexOf('?') > 0) {
@@ -226,15 +250,18 @@ public class DataSourceConfig {
 			url = url + "targetDriver=com.ideamoment.ideajdbc.datasource.DefaultDataSource";
 		}
 		//处理日志结束
-		
+
 		maxConnectionLifetime = IdeaDataConfiguration.getInt(prefix+"maxConnectionLifetime", 1440000);
 		maxActiveTime = IdeaDataConfiguration.getInt(prefix+"maxActiveTime", 300);
 
 		minConnections = IdeaDataConfiguration.getInt(prefix+"minConnections", 2);
 		maxConnections = IdeaDataConfiguration.getInt(prefix+"maxConnections", 15);
-		
-		
+
+
 		heartbeatSql = IdeaDataConfiguration.get(prefix + "heartbeatSql", null);
 		heartbeatSleepTime = IdeaDataConfiguration.getInt(prefix + "heartbeatSleepTime", 5000);
+
+		testBeforeUse = IdeaDataConfiguration.getBoolean(prefix + "testBeforeUse", false);
+		testAfterUse = IdeaDataConfiguration.getBoolean(prefix + "testAfterUse", false);
 	}
 }
